@@ -1,5 +1,4 @@
 clear;close all
-previous_error_flag = 1;
 load dir_change_Ay_info
 load my_const.mat
 
@@ -290,11 +289,7 @@ for t0_idx = 1:length(t0_arr)
                 end
             end
             
-            if previous_error_flag
-                save("./data/big_car/spd_change/various_initial_condition/spd_change_t0="+num2str(t0)+"_u="+num2str(u0)+"_Au="+num2str(Au)+","+num2str(Au_idx)+".mat",'vehRS_save','brake_idx1','brake_idx2');
-            else
-                save("./data/spd_change/zero_initial_condition/spd_change_t0="+num2str(t0)+"_u="+num2str(u0)+"_Au="+num2str(Au)+","+num2str(Au_idx)+".mat",'vehRS_save','brake_idx1','brake_idx2');
-            end
+            save("./FRSdata/spd_change_t0="+num2str(t0)+"_u="+num2str(u0)+"_Au="+num2str(Au)+","+num2str(Au_idx)+".mat",'vehRS_save','brake_idx1','brake_idx2');
         end
     end
 end

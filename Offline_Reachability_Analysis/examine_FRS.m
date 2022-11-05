@@ -1,37 +1,14 @@
 clear;
-dir_folder = "./data/big_car_t=0.005/";
+dir_folder = "./FRSdata/";
 files = dir(dir_folder+'*.mat');
 
-calc_force_flag = false;
-extended_r0v0_table = true;% see slides for help, this adds extra four rows into the table so we can check the initial state to see if it is a verified initial condition
 dim = 20;
 
-options.tensorParallel = 0;%turn this to 1 if want to use parallel, not working very well.
-% set options for reachability analysis:
-options.taylorTerms=15; % number of taylor terms for reachable sets
-options.zonotopeOrder= 100; % zonotope order... increase this for more complicated systems.
-options.maxError = 1e100*ones(dim, 1); % our zonotopes shouldn't be "splitting", so this term doesn't matter for now
-options.verbose = 0;
-options.uTrans = 0; % we won't be using any inputs, as traj. params specify trajectories
-options.U = zonotope([0, 0]);
-options.advancedLinErrorComp = 0;
-options.tensorOrder = 1;
-options.errorOrder = 50;
-options.reductionInterval = inf;
-options.reductionTechnique = 'girard';
-
-options.tStart = 0;
-options.tFinal = 1;
-options.reachabilitySteps=1;% discrete 1 time step prop
-options.timeStep=options.tFinal/options.reachabilitySteps;
 lane_info = load('lane_change_Ay_info.mat');
 dir_info = load('dir_change_Ay_info.mat');
-% predict_err_lat = load('lateral_prediction_error.mat');
-% predict_err_spd = load('spd_change_prediction_error.mat');
-load_const
+load my_const.mat
 dt = dir_info.t0_dt;
 t0_vec = 0:dt:tpk-dt;
-% u0_vec = 5:2:27;
 u0_vec = dir_info.u0_vec;
 lane_time_bin_num = tpk/dt;
 dir_time_bin_num = tpk_dir/dt;
@@ -47,44 +24,40 @@ for u0 = u0_vec
     M(char("Autb"))= [];  %keep this size loose since the number of actions may be different for each spd
     M(char("Au"))= cell(0);
     
-    if extended_r0v0_table %uses the limits that taking forces into account from find_proper_reference_brute
-        tb = nan*ones(8+6,dir_num,dir_time_bin_num); %see slides for dimension help
-        u0_idx = find(dir_info.u0_vec == u0);
-        for t0_idx = 1:dir_time_bin_num
-            for Ay_idx = 1:dir_num
-                tb(5,Ay_idx,t0_idx) = dir_info.v0_limit_c(t0_idx,Ay_idx,u0_idx)-dir_info.v0_limit_gen(t0_idx,Ay_idx,u0_idx);
-                tb(6,Ay_idx,t0_idx) = dir_info.v0_limit_c(t0_idx,Ay_idx,u0_idx)+dir_info.v0_limit_gen(t0_idx,Ay_idx,u0_idx);
-                tb(7,Ay_idx,t0_idx) = dir_info.r0_limit_c(t0_idx,Ay_idx,u0_idx)-dir_info.r0_limit_gen(t0_idx,Ay_idx,u0_idx);
-                tb(8,Ay_idx,t0_idx) = dir_info.r0_limit_c(t0_idx,Ay_idx,u0_idx)+dir_info.r0_limit_gen(t0_idx,Ay_idx,u0_idx);
-            end
+
+    tb = nan*ones(8+6,dir_num,dir_time_bin_num); %see slides for dimension help
+    u0_idx = find(dir_info.u0_vec == u0);
+    for t0_idx = 1:dir_time_bin_num
+        for Ay_idx = 1:dir_num
+            tb(5,Ay_idx,t0_idx) = dir_info.v0_limit_c(t0_idx,Ay_idx,u0_idx)-dir_info.v0_limit_gen(t0_idx,Ay_idx,u0_idx);
+            tb(6,Ay_idx,t0_idx) = dir_info.v0_limit_c(t0_idx,Ay_idx,u0_idx)+dir_info.v0_limit_gen(t0_idx,Ay_idx,u0_idx);
+            tb(7,Ay_idx,t0_idx) = dir_info.r0_limit_c(t0_idx,Ay_idx,u0_idx)-dir_info.r0_limit_gen(t0_idx,Ay_idx,u0_idx);
+            tb(8,Ay_idx,t0_idx) = dir_info.r0_limit_c(t0_idx,Ay_idx,u0_idx)+dir_info.r0_limit_gen(t0_idx,Ay_idx,u0_idx);
         end
-        M(char("dirtb"))= tb;
-    else
-        M(char("dirtb"))= nan*ones(4,dir_num,dir_time_bin_num); %see slides for dimention help
     end
+    M(char("dirtb"))= tb;
+
     
     
     M(char("dir"))= cell(dir_num,dir_time_bin_num);
     
-    if extended_r0v0_table
-        tb =nan*ones(8+6,lan_num,lane_time_bin_num);
-        u0_idx = find(lane_info.u0_vec == u0);
-        if ~isempty(u0_idx) 
-            for t0_idx = 1:lane_time_bin_num
-                for Ay_idx = 1:lan_num
-                    tb(5,Ay_idx,t0_idx) = lane_info.v0_limit_c(t0_idx,Ay_idx,u0_idx)-lane_info.v0_limit_gen(t0_idx,Ay_idx,u0_idx);
-                    tb(6,Ay_idx,t0_idx) = lane_info.v0_limit_c(t0_idx,Ay_idx,u0_idx)+lane_info.v0_limit_gen(t0_idx,Ay_idx,u0_idx);
-                    tb(7,Ay_idx,t0_idx) = lane_info.r0_limit_c(t0_idx,Ay_idx,u0_idx)-lane_info.r0_limit_gen(t0_idx,Ay_idx,u0_idx);
-                    tb(8,Ay_idx,t0_idx) = lane_info.r0_limit_c(t0_idx,Ay_idx,u0_idx)+lane_info.r0_limit_gen(t0_idx,Ay_idx,u0_idx);
-                end
-            end 
-        else
-            aaa = 1
-        end
-        M(char("lantb"))= tb;
+
+    tb =nan*ones(8+6,lan_num,lane_time_bin_num);
+    u0_idx = find(lane_info.u0_vec == u0);
+    if ~isempty(u0_idx) 
+        for t0_idx = 1:lane_time_bin_num
+            for Ay_idx = 1:lan_num
+                tb(5,Ay_idx,t0_idx) = lane_info.v0_limit_c(t0_idx,Ay_idx,u0_idx)-lane_info.v0_limit_gen(t0_idx,Ay_idx,u0_idx);
+                tb(6,Ay_idx,t0_idx) = lane_info.v0_limit_c(t0_idx,Ay_idx,u0_idx)+lane_info.v0_limit_gen(t0_idx,Ay_idx,u0_idx);
+                tb(7,Ay_idx,t0_idx) = lane_info.r0_limit_c(t0_idx,Ay_idx,u0_idx)-lane_info.r0_limit_gen(t0_idx,Ay_idx,u0_idx);
+                tb(8,Ay_idx,t0_idx) = lane_info.r0_limit_c(t0_idx,Ay_idx,u0_idx)+lane_info.r0_limit_gen(t0_idx,Ay_idx,u0_idx);
+            end
+        end 
     else
-        M(char("lantb"))= nan*ones(4,lan_num,lane_time_bin_num);
+        aaa = 1
     end
+    M(char("lantb"))= tb;
+
     
     
     M(char("lan"))= cell(lan_num,lane_time_bin_num);
@@ -137,17 +110,6 @@ for i=1:length(files)
     mega_idx = find(abs(u0_vec - u0)<0.01);
     M = M_mega{mega_idx};
     
-    if calc_force_flag
-        FRS.delta_force =cell(size(FRS.vehRS_save));
-        if contains(files(i).name,'lane_change') %get the dynamics ready for force calc
-            dyn_arr = {@dyn_y_change_forces,@dyn_y_brake_forces};
-        elseif contains(files(i).name,'dir_change')
-            dyn_arr = {@dyn_dir_change_forces,@dyn_dir_brake_forces};
-        elseif contains(files(i).name,'spd_change')
-            dyn_arr = {@dyn_u_change_forces,@dyn_u_brake_forces};
-        end
-    end
-    
     dist_arr = [];
     
     for frs_idx = length(FRS.vehRS_save):-1:1
@@ -185,26 +147,6 @@ for i=1:length(files)
         %uncertainty and robustness into CORA
         FRS.vehRS_save{frs_idx}= FRS.vehRS_save{frs_idx} +footprint_obs_zono;
         
-        if calc_force_flag && (frs_idx < FRS.brake_idx2)
-            options.x0 = center(FRS.vehRS_save{frs_idx});
-            
-            options.R0 = deleteZeros(deleteAligned(FRS.vehRS_save{frs_idx}));
-            if frs_idx < FRS.brake_idx1
-                dyn = dyn_arr{1};
-            else
-                if contains(files(i).name,'lane_change') 
-                    options.x0(end) = options.x0(end) - (tpk);%!!!Make this tpk-t0!!!!
-                else
-                    options.x0(end) = options.x0(end) - (tpk_dir);
-                    options.R0 = zonotope([options.x0 generators(options.R0)]); 
-                end
-                dyn = dyn_arr{2};
-            end
-            sysDisc = nonlinearSysDT(dim,1,dyn,options);
-            R = reach(sysDisc,options);
-            FRS.delta_force{frs_idx} = deleteZeros(deleteAligned(R{2}));
-            %         zonotope_slice(FRS.delta_force{end}, [7;8;9;12], [u0;0;0;-0.0148]);
-        end
     end
     [time_dist_min, min_idx] = min(dist_arr);
     min_idx
@@ -257,8 +199,5 @@ for i=1:length(files)
         M('Au') = MAu;
     end
 end
-if calc_force_flag
-    save(dir_folder+"../FRS_Rover_"+string(datetime('today'))+"_with_force.mat",'M_mega')
-else
-    save(dir_folder+"../FRS_Rover_"+string(datetime('today'))+"_no_force.mat",'M_mega','-v7.3','-nocompression')
-end
+
+save(dir_folder+"../FRS_Rover_"+string(datetime('today'))+"_no_force.mat",'M_mega','-v7.3','-nocompression')

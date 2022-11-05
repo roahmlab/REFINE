@@ -17,10 +17,8 @@ orig_dir = cd;
 %   strings
 arg0 = varargin{1};
 if nargin ~= 2 || isstring(arg0) || ischar(arg0) || iscellstr(arg0)
-%     cd('/home/roahm/matlab/toolbox/matlab/strfun/');
     cd('C:\Program Files\MATLAB\R2021b\toolbox\matlab\strfun')
 else
-%     cd('/home/roahm/Documents/MATLAB/JL_test/CORA_2018/global functions/globOptimization')
     cd('C:\Users\darkmoon\Documents\MATLAB\CORA_2018\global functions\globOptimization')
 end
 

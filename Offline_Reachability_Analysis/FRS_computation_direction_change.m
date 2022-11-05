@@ -1,5 +1,4 @@
 clear;close all
-previous_error_flag = 1;
 load dir_change_Ay_info
 load my_const.mat
 
@@ -330,11 +329,7 @@ for t0_idx = 1:length(t0_arr)
 
             
             
-            if previous_error_flag
-                save("./data/big_car/dir_change/various_initial_condition/dir_change_t0="+num2str(t0)+"_u="+num2str(u0)+"_Ay="+num2str(del_y_idx)+","+num2str(del_y)+".mat",'vehRS_save','brake_idx1','brake_idx2');
-            else
-                save("./data/big_car/dir_change/zero_initial_condition/dir_change_t0="+num2str(t0)+"_u="+num2str(u0)+"_Ay="+num2str(del_y_idx)+","+num2str(del_y)+".mat",'vehRS_save','brake_idx1','brake_idx2');
-            end
+            save("./FRSdata/dir_change_t0="+num2str(t0)+"_u="+num2str(u0)+"_Ay="+num2str(del_y_idx)+","+num2str(del_y)+".mat",'vehRS_save','brake_idx1','brake_idx2');
         end
     end
 end

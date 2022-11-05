@@ -10,7 +10,6 @@
 %save speed center and generator at braking idx, and low idx
 clear;close all
 load lane_change_Ay_info
-previous_error_flag = 1;
 load my_const.mat
 plot_flag = 0;
 
@@ -306,11 +305,8 @@ for t0_idx = 1 % we are disabling the t0idx for the paper, just recheck in the m
 
             end
 
-            if previous_error_flag
-                save("./data/big_car/lane_change/various_initial_condition/lane_change_t0="+num2str(t0)+"_u="+num2str(u0)+"_Ay="+num2str(del_y_idx)+","+num2str(del_y)+".mat",'vehRS_save','brake_idx1','brake_idx2');
-            else
-                save("./data/lane_change/zero_initial_condition/lane_change_t0="+num2str(t0)+"_u="+num2str(u0)+"_Ay="+num2str(del_y_idx)+","+num2str(del_y)+".mat",'vehRS_save','brake_idx1','brake_idx2');
-            end
+
+            save("./FRSdata/lane_change_t0="+num2str(t0)+"_u="+num2str(u0)+"_Ay="+num2str(del_y_idx)+","+num2str(del_y)+".mat",'vehRS_save','brake_idx1','brake_idx2');
         end
     end
 end

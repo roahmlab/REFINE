@@ -28,11 +28,10 @@ function FRS = linear_regime_verification(FRS, manu_type)
     % stability of low-speed driving simulation
     uub = supremum(u);
     ulb = infimum(u);
-    uden = interval(max(6,ulb), max(6,uub));
+    uden = interval(max(u_really_slow*1.1,ulb), max(u_really_slow*1.1,uub));
 
     if uub <= u_really_slow
-%         Cus = m/(lr+lf)*(lr/Caf1 - lf/Car1);
-        r = rd; % recall delta = rd * (lr+lf+Cus*u^2) / u;
+        r = rd; % recall delta = rd * (lr+lf+Cus*u^2) / u and Cus = m/(lr+lf)*(lr/Caf1 - lf/Car1);
         v = lr*r - m*lf/Car1/(lf+lr)*u^2*r;
         alpha_r = -(v - lr*r) / uden;
     else
@@ -66,7 +65,7 @@ function FRS = linear_regime_verification(FRS, manu_type)
     % test rear slip angle
     if supremum(alpha_r) > alpha_cri
         FRS = zonotope([FRS.Z, [1000; 1000; zeros(dim-2,1)]]);
-        disp('alpha_r too large')
+        disp('alpha_r is too large')
         return
     end
     Fyr = Car1 * alpha_r;
@@ -78,7 +77,7 @@ function FRS = linear_regime_verification(FRS, manu_type)
     alpha_f = -Izz*Kr/lf/Caf1*(r-rd) - Izz*Kh/lf/Caf1*(h-hd) +  Izz/lf/Caf1*rd + lr/lf/Caf1*Fyr + Izz/lf/Caf1*tau_r;
     if supremum(alpha_f) > alpha_cri
         FRS = zonotope([FRS.Z, [1000; 1000; zeros(dim-2,1)]]);
-        disp('alpha_f too large')
+        disp('alpha_f is too large')
         return
     end
 
@@ -87,7 +86,7 @@ function FRS = linear_regime_verification(FRS, manu_type)
     lambda_f = (lf+lr)/grav_const/lr/mu_bar*(-Ku*(u-ud) + dud -v*r + tau_u);
     if supremum(lambda_f) > lambda_cri
         FRS = zonotope([FRS.Z, [1000; 1000; zeros(dim-2,1)]]);
-        disp('lambda_f too large')
+        disp('lambda_f is too large')
         return
     end
 
