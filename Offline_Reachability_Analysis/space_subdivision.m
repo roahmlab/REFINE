@@ -16,14 +16,8 @@ mode = 1; %mode 1 for dir change, mode 2 for lane change
 x0 = 0;
 y0 = 0;
 h0 = 0;
-if mode == 3
-    u0_vec = 0.25:0.5:4.75;%above 28 ref is far far away from real, can come back to 0 in time
-    u0_gen = 0.5*(u0_vec(2)-u0_vec(1));
-else
-    u0_vec = 5.25:0.5:19.75;%above 28 ref is far far away from real, can come back to 0 in time
-    u0_vec = 5.25:0.5:29.75;
-    u0_gen = 0.5*(u0_vec(2)-u0_vec(1));
-end
+u0_vec = 5.25:0.5:29.75;
+u0_gen = 0.5*(u0_vec(2)-u0_vec(1));
 v0 = 0;
 t0 = 0;
 r0 = 0;
@@ -41,12 +35,9 @@ if mode == 2
 elseif mode == 1
     y_ideal = 3;
     num_Ay = 2;
-elseif mode == 3
-    y_ideal = 0;% not used
-    num_Ay = 1;
 end
 
-if mode == 1 || mode == 3
+if mode == 1
 %     t_f = tpk_dir +tbrk; %3+4  %have new adaptive braking time, not 4 sec anymore 
     end_idx = tpk_dir/t0_dt;
 else
@@ -75,7 +66,7 @@ for u0idx = 1:length(u0_vec)% starting speed
         % if set to one will make t symbolic, for dynamics generation
         % syms t Au u0 %Ay av0 au0 v0 r0
         Au = u0;  scale_Ay_flag = 1; % enable lane change manuver by setting this to 1
-        if mode == 1 || mode == 3
+        if mode == 1 
             t= [];%linspace(0,tpk_dir,1001);
             [T_go,U_go,Z_go] = sin_one_hump_parameterized_traj_with_brake(t0,Ay,Au,u0,t,syms_flag, scale_Ay_flag);
         else
@@ -100,7 +91,7 @@ for u0idx = 1:length(u0_vec)% starting speed
             %     plot(T_go, U_go)
             %     plot(Z_go(1,:), Z_go(2,:))
         end
-        if mode == 1 || mode == 3
+        if mode == 1 
             A_go.move(tpk_dir,T_go,U_go,Z_go) ;
         else
             A_go.move(tpk,T_go,U_go,Z_go) ;
@@ -111,12 +102,7 @@ for u0idx = 1:length(u0_vec)% starting speed
         T = A_go.time';
         delta_y = X(end, 2);
 
-        if abs(delta_y-y_ideal) <0.01 || mode == 3% found the right Ay
-            if mode == 3
-                Ay = 0.4 *(u0/10-0.6)+0.1*(u0/10-0.6).^2+0.21;
-            else
-%                 Ay =% min(0.4 *(u0/10-0.6)+0.1*(u0/10-0.6).^2+0.21,0.4);
-            end
+        if abs(delta_y-y_ideal) <0.01 % found the right Ay
             done_flag = 1;
             
             Ay_vec(u0idx) = Ay;
@@ -130,12 +116,12 @@ for u0idx = 1:length(u0_vec)% starting speed
                 for sim_idx = 1:sim_end_idx 
                     A_go.reset([0;0;0;u0;0;0;w0;0;0;0]);
                     Ay_sim = del_y_arr(Ay_idx) + ratio_Ay(sim_idx)*delta_y;% either plus or minus delta, it is repetitive i know
-                    if mode == 1 || mode == 3
+                    if mode == 1 
                         [T_go,U_go,Z_go] = sin_one_hump_parameterized_traj_with_brake(0,Ay_sim,Au,u0,t,syms_flag, scale_Ay_flag);
                     else
                         [T_go,U_go,Z_go] = gaussian_T_parameterized_traj_with_brake(0,Ay_sim,Au,u0,t,syms_flag, scale_Ay_flag);
                     end
-                    if mode == 1 || mode == 3
+                    if mode == 1 
                         A_go.move(tpk_dir,T_go,U_go,Z_go) ;
                     else
                         A_go.move(tpk,T_go,U_go,Z_go) ;

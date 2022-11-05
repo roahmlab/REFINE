@@ -5,7 +5,7 @@ lr = 1.67;
 Izz = 3273; 
 rw = 0.33;
 lambda_cri = 0.15;
-alpha_cri = 0.1;
+alpha_cri = 0.12;
 mu_bar = 10;
 Caf1 = 1.716e5;  
 Car1 = 2.9028e5;
@@ -27,8 +27,8 @@ phiP = 4;      % phi_1,r
 phiI = 1;      % phi_2,r
 max_Fx_uncertainty  = 393;
 Mu = max_Fx_uncertainty / m;
-b_u_pro = 0;
-b_u_off = Mu;
+b_u_pro = Mu/5;
+b_u_off = 0;
 Mr = 0.01;
 
 
@@ -61,10 +61,10 @@ C_current    = 0.4642;
 % mu_gnd =0.15;%0.275;%
 % obs_localize_err = 0.08;
 max_Fyr_uncertainty = 10; %300; % from Hansen Data
-% max_Fyr_uncertainty_braking = 0.5; % from Hansen Data
-% max_Fyr_uncertainty_spd = 2; % from Hansen Data
-% max_Fx_uncertainty  = 393;% double confirm with hansen
-% max_Fx_uncertainty_braking  = 0;
+max_Fyr_uncertainty_braking = 0.5; % from Hansen Data
+max_Fyr_uncertainty_spd = 2; % from Hansen Data
+max_Fx_uncertainty  = 393;% double confirm with hansen
+max_Fx_uncertainty_braking  = 0;
 
 
 

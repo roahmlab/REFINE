@@ -2,7 +2,7 @@ function FRS = linear_regime_verification(FRS, manu_type)
 % this script test if the FRS results in linear regime, otherwise modify
 % the FRS to make it super large so that it is useless for online planning
 % (equivalently, the corresponding FRS serie is deleted)
-    load_const;
+    load my_const.mat;
     Z = FRS.Z;
     dim = size(Z,1);
     
@@ -13,52 +13,81 @@ function FRS = linear_regime_verification(FRS, manu_type)
     r = FRS_itv(6);
     t0 = Z(10,1);
     tbrk1 = Z(13,1);
-    t = FRS_itv(end);
+    t = FRS_itv(20);
     u0 = FRS_itv(7);
     h0 = Z(end-1);
     pu = FRS_itv(11);
     py = FRS_itv(12);
-    err_r_sum = FRS_itv(end-4);
-    err_u_sum = FRS_itv(end-2);
+    err_r_sum = FRS_itv(16);
+    err_u_sum = FRS_itv(18);
 
+    [hd, ud, dud, rd, drd] = get_ref(t0,tbrk1,t,u0,h0,pu,py,manu_type);
 
-
-    % trim u for stabalization if u appears in denomenator
+    % trim u for stabalization when u appears in denomenator as suggested
+    % by Tae-Yun Kim et al, Advanced slip ratio for ensuring numerical
+    % stability of low-speed driving simulation
     uub = supremum(u);
     ulb = infimum(u);
-    if uub <= 1
-        uden = 1;
-    elseif ulb < 1
-        uden = interval(1,uub);
+    uden = interval(max(6,ulb), max(6,uub));
+
+    if uub <= u_really_slow
+%         Cus = m/(lr+lf)*(lr/Caf1 - lf/Car1);
+        r = rd; % recall delta = rd * (lr+lf+Cus*u^2) / u;
+        v = lr*r - m*lf/Car1/(lf+lr)*u^2*r;
+        alpha_r = -(v - lr*r) / uden;
     else
-        uden = u;
+        vlb = infimum(v);
+        vub = supremum(v);
+        rlb = infimum(r);
+        rub = supremum(r);
+
+        if (vlb >=0 || vub <=0) && (rlb >=0 || rub <=0)
+            alpha_r = -(v - lr*r) / uden;
+        elseif vlb*vub < 0 && (rlb >=0 || rub <=0)
+            if rlb >= 0
+                alpha_r = -(interval(0,vub) - lr*r) / uden;
+            else
+                alpha_r = -(interval(vlb,0) - lr*r) / uden;
+            end
+        elseif (vlb >=0 || vub <=0) && rlb*rub<0
+            if vlb >= 0
+                alpha_r = -(v - lr*interval(0,rub)) / uden;
+            else
+                alpha_r = -(v - lr*interval(rlb,0)) / uden;
+            end
+        else
+            alpha_r1 = -(interval(vlb,0) - lr*interval(rlb,0)) / uden;
+            alpha_r2 = -(interval(0,vub) - lr*interval(0,rub)) / uden;
+            alpha_r = interval(min(infimum(alpha_r1),infimum(alpha_r2)), max(supremum(alpha_r1),supremum(alpha_r2)));
+        end
+        
     end
 
     % test rear slip angle
-    alpha_r = -(v - lr*r) / uden;
-    if supremum(alpha_r) < 0.1
-        FRS = zonotope([FRS, [1000; 1000; zeros(dim-2,1)]]);
+    if supremum(alpha_r) > alpha_cri
+        FRS = zonotope([FRS.Z, [1000; 1000; zeros(dim-2,1)]]);
+        disp('alpha_r too large')
         return
     end
     Fyr = Car1 * alpha_r;
 
 
-    [hd, ud, dud, rd, drd] = get_ref(t0,tbrk1,t,u0,h0,pu,py,manu_type);
+    
     % test front slip angle
-    Mr = ???
     tau_r = ((kappaP+kappaI*err_r_sum)*Mr + (phiP+phiI*err_r_sum)) * (r-rd);
     alpha_f = -Izz*Kr/lf/Caf1*(r-rd) - Izz*Kh/lf/Caf1*(h-hd) +  Izz/lf/Caf1*rd + lr/lf/Caf1*Fyr + Izz/lf/Caf1*tau_r;
-    if supremum(alpha_f) < 0.1
-        FRS = zonotope([FRS, [1000; 1000; zeros(dim-2,1)]]);
+    if supremum(alpha_f) > alpha_cri
+        FRS = zonotope([FRS.Z, [1000; 1000; zeros(dim-2,1)]]);
+        disp('alpha_f too large')
         return
     end
 
     % test front slip ratio (todo: define mu_bar=10 in load_const)
-    Mu = ???
     tau_u = ((kappaPU+kappaIU*err_u_sum)*Mu + (phiPU+phiIU*err_u_sum)) * (u-ud);
     lambda_f = (lf+lr)/grav_const/lr/mu_bar*(-Ku*(u-ud) + dud -v*r + tau_u);
-    if supremum(lambda_f) < 0.15
-        FRS = zonotope([FRS, [1000; 1000; zeros(dim-2,1)]]);
+    if supremum(lambda_f) > lambda_cri
+        FRS = zonotope([FRS.Z, [1000; 1000; zeros(dim-2,1)]]);
+        disp('lambda_f too large')
         return
     end
 

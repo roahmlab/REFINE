@@ -2,6 +2,7 @@
 *.asv
 *.mat
 *.mp4
+dyn*
 
 
 

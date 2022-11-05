@@ -1,5 +1,5 @@
 function [hd, ud, dud, rd, drd] = get_ref(t0,tbrk1,t,u0,h0,pu,py,manu_type)
-    load_const;
+    load my_const.mat;
     hd = h0;
     ud = pu;
     dud = 0;

@@ -6,7 +6,7 @@ To run the code in this repository, you will need the following:
 - [CORA 2018](https://tumcps.github.io/CORA/) for Forward Reachable Sets representation and computation
 
 # Overview
-## 0. Properly install the above toolboxes, and run [`install.m`](https:// blabla)
+## 0. Properly install the above toolboxes, and run [`install.m`](https://github.com/jinsunl/REFINE/blob/main/install.m)
 ## 1. Offline reachability analysis
 control parameter `P = (p_u,p_y)`
 
