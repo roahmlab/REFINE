@@ -1,0 +1,1 @@
+LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6 /usr/local/lib/libipopt.so.3 /usr/local/lib/libcoinhsl.so.2 /usr/lib/x86_64-linux-gnu/libxmlrpcpp.so /usr/lib/x86_64-linux-gnu/librosconsole_log4cxx.so" /opt/matlab/bin/matlab -softwareopengl
