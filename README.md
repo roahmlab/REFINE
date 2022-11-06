@@ -17,6 +17,7 @@ To run the code in this repository, you will need:
 # Overview
 ## 0. Installation
 - Run dockerfile (need to modify this line once Lucas uploads the file).
+- Lunch docker (need to modify this line once Lucas uploads the file).
 - Run MATLAB inside docker (need to modify this line once Lucas uploads the file).
 - Add required toolboxes in the search path of MATLAB.
 - Run [`install.m`](https://github.com/jinsunl/REFINE/blob/main/install.m).

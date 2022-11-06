@@ -40,7 +40,7 @@ for t0_idx = 1 % we are disabling the t0idx for the paper, just recheck in the m
     options.x0 = zeros(dim,1);
     frs_gen_starttic = tic;
     
-    for u0 = u0_vec(2:end)% set range of Ay or del_y allowed
+    for u0 = u0_vec(2:end)
         [~,u0_idx ]=min(abs(u0_vec -u0));
         del_y_arr = linspace(0,Ay_vec(u0_idx),2*num_Ay+1);%    del_y_arr = -0.8:0.2:0;
         delyspd = del_y_arr(2) - del_y_arr(1);
@@ -50,9 +50,9 @@ for t0_idx = 1 % we are disabling the t0idx for the paper, just recheck in the m
         %     r0v0_gen = Ay_vec(u0_idx);
         %     del_y_arr = [0.3];
         for del_y_idx = 1:length(del_y_arr)
-            del_y = del_y_arr(del_y_idx);
+            p_y = del_y_arr(del_y_idx);
             
-            u0, del_y
+            u0, p_y
             options.x0 = zeros(dim,1);
             options.tFinal = tpk - t0;
             options.timeStep = 0.01;
@@ -62,9 +62,9 @@ for t0_idx = 1 % we are disabling the t0idx for the paper, just recheck in the m
             options.x0(6) = r0_limit_c(t0_idx,del_y_idx,u0_idx);
             options.x0(9) = r0_limit_c(t0_idx,del_y_idx,u0_idx);
             options.x0(7) = u0;
-            options.x0(11) = u0; %Au = u0
+            options.x0(11) = u0; %p_u = u0
             options.x0(10) = t0; %set t0 = 0.5;
-            options.x0(12) = del_y;
+            options.x0(12) = p_y;
             options.x0(14) = 0;
             % options.R0 = zonotope( [options.x0, 0.1*diag([1, 1, 2, 2, 0.5, 0, 0])] );
             % options.R0 = zonotope( [options.x0, [0;0;0.2;0;0;0;], [0;0;0;1;0;0;], [0;0;0;0;0.01;0;]] );
@@ -155,7 +155,7 @@ for t0_idx = 1 % we are disabling the t0idx for the paper, just recheck in the m
             %% find the time that vehBrk first intersect with u_real_slow
             % and the time that vehBrk is completely below u_real_slow
             % ASSUMING u is guranteed to be greater than u_real_slow before
-            % entering phase 2 by A LOT!!!!!!!
+            % entering phase 2 by u LOT!!!!!!!
             idx_justpass = inf;
             idx_allpass = inf;
             for i = 1:length(vehBrk)
@@ -306,7 +306,7 @@ for t0_idx = 1 % we are disabling the t0idx for the paper, just recheck in the m
             end
 
 
-            save("./FRSdata/lane_change_t0="+num2str(t0)+"_u="+num2str(u0)+"_Ay="+num2str(del_y_idx)+","+num2str(del_y)+".mat",'vehRS_save','brake_idx1','brake_idx2');
+            save("./FRSdata/lane_change_t0="+num2str(t0)+"_u="+num2str(u0)+"_p_y="+num2str(del_y_idx)+","+num2str(p_y)+".mat",'vehRS_save','brake_idx1','brake_idx2');
         end
     end
 end

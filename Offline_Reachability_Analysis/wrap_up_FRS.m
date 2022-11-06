@@ -200,4 +200,4 @@ for i=1:length(files)
     end
 end
 
-save(dir_folder+"../FRS_Rover_"+string(datetime('today'))+"_no_force.mat",'M_mega','-v7.3','-nocompression')
+save(dir_folder+"../car_frs.mat",'M_mega','-v7.3','-nocompression')

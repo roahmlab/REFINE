@@ -16,12 +16,12 @@ function FRS = linear_regime_verification(FRS, manu_type)
     t = FRS_itv(20);
     u0 = FRS_itv(7);
     h0 = Z(end-1);
-    pu = FRS_itv(11);
-    py = FRS_itv(12);
+    p_u = FRS_itv(11);
+    p_y = FRS_itv(12);
     err_r_sum = FRS_itv(16);
     err_u_sum = FRS_itv(18);
 
-    [hd, ud, dud, rd, drd] = get_ref(t0,tbrk1,t,u0,h0,pu,py,manu_type);
+    [hd, ud, dud, rd, drd] = get_ref(t0,tbrk1,t,u0,h0,p_u,p_y,manu_type);
 
     % trim u for stabalization when u appears in denomenator as suggested
     % by Tae-Yun Kim et al, Advanced slip ratio for ensuring numerical

@@ -32,7 +32,7 @@ for t0_idx = 1:length(t0_arr)
     frs_gen_starttic = tic;
     
     
-    for u0 = u0_vec(2:end)% set range of Ay or del_y allowed
+    for u0 = u0_vec(2:end)
         [~,u0_idx ]=min(abs(u0_vec -u0));
         
         %     delyspd = 0.3;
@@ -45,8 +45,8 @@ for t0_idx = 1:length(t0_arr)
             end
             del_y_idx = 1; %constant
 %             del_y = del_y_arr(del_y_idx);
-            Au = u0_vec(Au_idx);
-            u0,Au 
+            p_u = u0_vec(Au_idx);
+            u0,p_u 
             options.x0 = zeros(dim,1);
             options.tFinal = tpk_dir-t0;
             options.timeStep = 0.01;
@@ -56,7 +56,7 @@ for t0_idx = 1:length(t0_arr)
             options.x0(6) = r0_limit_c(t0_idx,del_y_idx,u0_idx);
             options.x0(9) = r0_limit_c(t0_idx,del_y_idx,u0_idx);
             options.x0(7) = u0;
-            options.x0(11) = Au; 
+            options.x0(11) = p_u; 
             options.x0(10) = t0; %set t0 = 0.5;
             options.x0(12) = 0;
             options.x0(14) = 0;
@@ -100,10 +100,10 @@ for t0_idx = 1:length(t0_arr)
              %% phase 2: braking until u starts appearing below 0.5m/s
             temp = interval(Rt{end}{1}.set);
             u_scale = [infimum(temp(4)),supremum(temp(4))];
-            if Au == 0.6
-                brake_time = (Au +5*u0_gen - u_really_slow )/amax;% + tbrk2;
+            if p_u == 0.6
+                brake_time = (p_u +5*u0_gen - u_really_slow )/amax;% + tbrk2;
             else
-                brake_time = (Au - u_really_slow )/amax;% + tbrk2;
+                brake_time = (p_u - u_really_slow )/amax;% + tbrk2;
             end
             
             t_prev = zeros(dim,1); t_prev(end)=tpk_dir-t0;%assume it complete the whole time
@@ -140,7 +140,7 @@ for t0_idx = 1:length(t0_arr)
             GR0 = [g1 GR0];
             options.R0 = zonotope([options.x0, GR0]);
                 
-            if Au == 0.6
+            if p_u == 0.6
                 options.tFinal = (u_scale(2) +5*u0_gen  - u_really_slow )/amax+0.01; % make sure the umax pass u_really_slow as well
             else
                 options.tFinal = (u_scale(2) - u_really_slow )/amax+0.01; % make sure the umax pass u_really_slow as well
@@ -226,7 +226,7 @@ for t0_idx = 1:length(t0_arr)
                     brake_idx2 = length(vehRS_save) + 1;
                 end
 
-                temp{cnt}{1} = linear_regime_verification(temp{cnt}{1},'Au');
+                temp{cnt}{1} = linear_regime_verification(temp{cnt}{1},'Au'); % we use tag 'Au' to indicate speed change maneuver
                 z1 = temp{cnt}{1};
                 if cnt == length(temp)
                     vehRS_save{end+1} = deleteAligned(deleteZeros(z1),slice_dim);
@@ -289,7 +289,7 @@ for t0_idx = 1:length(t0_arr)
                 end
             end
             
-            save("./FRSdata/spd_change_t0="+num2str(t0)+"_u="+num2str(u0)+"_Au="+num2str(Au)+","+num2str(Au_idx)+".mat",'vehRS_save','brake_idx1','brake_idx2');
+            save("./FRSdata/spd_change_t0="+num2str(t0)+"_u="+num2str(u0)+"_p_u="+num2str(Au_idx)+","+num2str(p_u)+".mat",'vehRS_save','brake_idx1','brake_idx2');
         end
     end
 end
