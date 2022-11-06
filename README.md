@@ -10,8 +10,9 @@ Real-time trajectory planning is achieved by solving an optimization framework i
 </p>
 
 # Installation Requirements
-To run the code in this repository, you will need:
-- A docker installed Ubuntu machine.
+REFINE is built on Ubuntu 20.04 with ROS Noetic Distribution, and the algorithms are implemented in MATLAB and C++17. 
+REFINE has the following required dependencies:
+- [Docker](https://www.docker.com/) to download simulation package.
 - [CORA 2018](https://tumcps.github.io/CORA/) for Forward Reachable Sets representation and computation.
 
 # Overview
