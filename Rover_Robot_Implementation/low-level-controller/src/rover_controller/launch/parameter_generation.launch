@@ -1,0 +1,64 @@
+<launch>
+  <node name="parameter_generation" pkg="rover_controller" type="parameter_generation_node" output="screen">
+  <!-- Should be the filename exported using the FRS exporter MATLAB script -->
+    <param name="frs_filename"     type="string" value="/home/nova/dec19.txt"/>
+    <param name="frs_low_filename" type="string" value="/home/nova/sept14low_int.txt"/>
+
+    <!-- Should be the filename exported using the polynomial exporter MATLAB script -->
+    <param name="poly_predict_coeffs_filename" type="string" value="/home/nova/poly_predict_coeffs_dec30.txt"/>
+
+    <!-- Waypoint Generation Parameters -->
+    <rosparam param="waypoint_interp_params">
+      <!-- Maximum allowed xy lookahead -->
+      max_lookahead: 15.00
+
+      <!-- Peak velocity to use as baseline for lookahead -->
+      peak_velocity: 1.50
+
+      <!-- Waypoints per meter -->
+      points_per_meter: 20.00
+
+      <!-- Multiplier on peak velocity to calculate xy lookahead -->
+      low_curvature_lookahead_mult: 4.0
+      high_curvature_lookahead_mult: 2.0
+
+      <!-- How much further to look ahead for heading than for xy -->
+      low_curvature_heading_plus: 2.00
+      high_curvature_heading_plus: 1.00
+
+      <!-- The minimum cutoff to be considered "high" curvature
+           k > {this value} ==> "high curvature"                -->
+      high_curvature_cutoff_min: 0.20
+
+      <!-- How many meters to look forward. 
+           Multiplied by points_per_meter to get number of points to look at.
+      -->
+      reduce_curve_lookahead: 7.0
+    </rosparam>
+
+    <rosparam param="model_consts">
+      m:    4.9565
+      lf:   0.203
+      lr:   0.107
+      caf1: 30.0
+      caf2: 1.0
+      car1: 50.0
+      car2: 1.0
+      izz:  0.11
+
+      r_kappa_p: 0.5
+      r_kappa_i: 1.0
+      r_phi_p: 4.0
+      r_phi_i: 1.0
+
+      u_kappa_p: 1.0
+      u_kappa_i: 0.8
+      u_phi_p: 1.0
+      u_phi_i: 0.8
+
+      delta_eval_min:  -0.45
+      delta_eval_max:   0.45
+      num_delta_evals: 10
+    </rosparam>
+  </node>
+</launch>

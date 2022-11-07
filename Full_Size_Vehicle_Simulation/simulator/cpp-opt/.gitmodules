@@ -1,6 +1,0 @@
-[submodule "src/rover_controller/fmt"]
-	path = src/rover_controller/fmt
-	url = git@github.com:fmtlib/fmt.git
-[submodule "roahm-rtd"]
-	path = roahm-rtd
-	url = git@github.com:llymburn512/roahm-rtd-su21-deps.git

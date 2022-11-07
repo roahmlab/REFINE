@@ -1,0 +1,9 @@
+.catkin_tools/profiles/default/
+build
+devel
+logs
+*.sw*
+*.mat
+*.asv
+*.pyc
+src/matlab_msg_gen_ros1/
