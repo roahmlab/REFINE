@@ -10,7 +10,6 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
         % state limits
         max_speed = 5; % m/s
         min_spd = 0.5;
-        %         % state indices
         speed_index = 4;
         
         maxFx = 1e50; % need proper limits eventually
