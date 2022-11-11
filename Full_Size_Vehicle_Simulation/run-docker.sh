@@ -16,6 +16,7 @@ docker run -it --rm                     \
   -v $(pwd)/.etc_group:/etc/group:ro    \
   -v $(pwd)/docker-home:/home/$(id -nu) \
   -v /dev/shm:/dev/shm                  \
+  -v ~/.matlab:/home/roahm/.matlab \
   -v /etc/timezone:/etc/timezone:ro     \
   -v /etc/localtime:/etc/localtime:ro   \
   -v $(pwd)/data:/data:ro               \
