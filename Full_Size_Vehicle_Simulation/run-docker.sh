@@ -6,7 +6,6 @@ getent group $(whoami) >> $(pwd)/.etc_group
 
 xhost +
 docker run -it --rm                     \
-  --gpus all                            \
   -e DISPLAY=$DISPLAY                   \
   -v /tmp/.X11-unix:/tmp/.X11-unix:ro   \
   --shm-size=512M                       \
