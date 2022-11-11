@@ -1,7 +1,7 @@
 # REFINE
 
 ## Installing Dependencies
-* Install Docker, following the instructions on the Docker website
+* Install Docker, following the instructions on the [Docker website](https://docs.docker.com/engine/install/ubuntu/)
 * Download the following into the `data` directory:
   * `coinhsl-2021.05.05.tar.gz` from [here](https://www.hsl.rl.ac.uk/download/coinhsl-archive/2021.05.05/)
   * `lane_change_Ay_info.mat`, `dir_change_Ay_info.mat`, `car_frs.mat`, `car_frs.txt` from the data folder [here](https://drive.google.com/drive/folders/1WZbFFhCyhYQlMJxuV4caIzNoa-Q9VZkW?usp=share_link)
