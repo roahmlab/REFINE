@@ -5,8 +5,8 @@ addpath(genpath('/data'))
 addpath(genpath('/simulator'))
 if method == 0 % flzono
 %     frs_filename = 'FRS_Rover_22-Jan-2022_no_force.mat' ;
-%     frs_filename = 'car_frs.mat';
-    frs_filename = 'FRS_Rover_30-Aug-2022_no_force.mat';
+    frs_filename = 'car_frs.mat';
+%     frs_filename = 'FRS_Rover_30-Aug-2022_no_force.mat';
 %     frs_filename = 'FRS_Rover_29-Sep-2022_no_force_dt=0.005.mat';
     if ~exist('frs','var')
         disp('Loading frs')
