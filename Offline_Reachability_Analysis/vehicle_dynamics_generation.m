@@ -3,11 +3,11 @@
 % a continous time dynamics for contigency braking in high-speed mode dyn_*_brake, and
 % a continous time dynamics for contigency braking in low-speed mode dyn_*_slow.
  
-% states: x, y, h, u, v, r,u0,v0, r0,t0 ,p_u,   p_y,  brake_time, Fy_error, Fx_error r_err_sum, h_err_sum, u_err_sum, th0   t 
+% states: x, y, h, u, v, r,u0,v0, r0,t0 ,p_u,   p_y,  brake_time, Fy_error, Fx_error r_err_sum, h_err_sum, u_err_sum, h0   t 
 %         1  2  3    4  5  6  7  8  9  10  11    12    13         14           15      16        17        18         19    20
 clear;
 load my_const.mat
-syms h brake_time Fy_error Fx_error t p_u u0 t0 v0 r0 u v r err_r_sum err_h_sum err_u_sum th0 
+syms h brake_time Fy_error Fx_error t p_u u0 t0 v0 r0 u v r err_r_sum err_h_sum err_u_sum h0 
 %% speed change 
 % velocities
 syms_flag = 1;
@@ -22,7 +22,7 @@ rd = U(3,1);
 hd = zeros(size(U(1,1)));
 ddyn = gen_closed_loop_dyn (hd, u, ud, v, vd, r, rd,h, Fy_error, Fx_error, err_r_sum, err_h_sum, err_u_sum, t);
 syms x y tdummy udummy p_y
-dyn = [x; y; h; u; v; r; u0;v0; r0;t0;p_u; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_u_sum; th0; t];
+dyn = [x; y; h; u; v; r; u0;v0; r0;t0;p_u; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_u_sum; h0; t];
 matlabFunction(ddyn, 'File', 'dyn_u_change', 'vars', {tdummy dyn udummy});
 
 % contigency braking (high-speed)
@@ -30,13 +30,13 @@ ud = U(1,2);
 vd = U(2,2);
 rd = U(3,2);
 ddyn = gen_closed_loop_dyn (hd, u, ud, v, vd, r, rd,h, Fy_error, Fx_error, err_r_sum, err_h_sum, err_u_sum, t);
-dyn = [x;y; h; u; v; r; u0;v0; r0;t0;p_u; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_u_sum; th0; t];
+dyn = [x;y; h; u; v; r; u0;v0; r0;t0;p_u; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_u_sum; h0; t];
 matlabFunction(ddyn, 'File', 'dyn_u_brake', 'vars', {tdummy dyn udummy});
 
 % contigency braking (low-speed)
 ud = U(1,3); 
 ddyn = gen_low_speed (u,ud,h, rd,t,err_u_sum);
-dyn = [x; y; h; u; v; r;u0;v0; r0;t0;p_u; p_y;  brake_time; Fy_error; err_r_sum; err_h_sum; err_u_sum; th0; t];
+dyn = [x; y; h; u; v; r;u0;v0; r0;t0;p_u; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_u_sum; h0; t];
 matlabFunction(ddyn, 'File', 'dyn_u_slow', 'vars', {tdummy dyn udummy});
 
 %% Lane Change
@@ -49,8 +49,8 @@ ud = U(1,1);
 vd = U(2,1);
 rd = U(3,1);
 hd = Z(1);
-ddyn = gen_closed_loop_dyn (hd - th0, u, ud, v, vd, r, rd,h, Fy_error, Fx_error, err_r_sum, err_h_sum, err_u_sum, t);
-dyn = [x; y; h; u; v; r; u0;v0; r0;t0;p_u; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_u_sum; th0; t];
+ddyn = gen_closed_loop_dyn (hd - h0, u, ud, v, vd, r, rd,h, Fy_error, Fx_error, err_r_sum, err_h_sum, err_u_sum, t);
+dyn = [x; y; h; u; v; r; u0;v0; r0;t0;p_u; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_u_sum; h0; t];
 matlabFunction(ddyn, 'File', 'dyn_y_change', 'vars', {tdummy dyn udummy});
 
 % contigency braking (high-speed)
@@ -58,14 +58,14 @@ ud = U(1,2);
 vd = U(2,2);
 rd = U(3,2);
 hd = subs(Z(1),t,tpk);
-ddyn = gen_closed_loop_dyn (hd-th0, u, ud, v, vd, r, rd,h, Fy_error, Fx_error, err_r_sum, err_h_sum, err_u_sum, t);
-dyn = [x; y; h; u; v; r; u0;v0; r0;t0;p_u; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_u_sum; th0; t];
+ddyn = gen_closed_loop_dyn (hd-h0, u, ud, v, vd, r, rd,h, Fy_error, Fx_error, err_r_sum, err_h_sum, err_u_sum, t);
+dyn = [x; y; h; u; v; r; u0;v0; r0;t0;p_u; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_u_sum; h0; t];
 matlabFunction(ddyn, 'File', 'dyn_y_brake', 'vars', {tdummy dyn udummy});
 
 % contigency braking (low-speed)
 ud = U(1,3);
 ddyn = gen_low_speed (u,ud,h,rd,t,err_u_sum);
-dyn = [x; y; h; u; v; r;u0;v0; r0;t0;p_u; p_y;  brake_time; Fy_error; err_r_sum; err_h_sum; err_u_sum; th0; t];
+dyn = [x; y; h; u; v; r;u0;v0; r0;t0;p_u; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_u_sum; h0; t];
 matlabFunction(ddyn, 'File', 'dyn_y_slow', 'vars', {tdummy dyn udummy});
 
 %% Direction change
@@ -78,8 +78,8 @@ ud = U(1,1);
 vd = U(2,1);
 rd = U(3,1);
 hd = Z(1);
-ddyn = gen_closed_loop_dyn (hd-th0, u, ud, v, vd, r, rd,h, Fy_error, Fx_error, err_r_sum, err_h_sum, err_u_sum, t);
-dyn = [x; y; h; u; v; r; u0;v0; r0;t0;p_u; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_u_sum; th0; t];
+ddyn = gen_closed_loop_dyn (hd-h0, u, ud, v, vd, r, rd,h, Fy_error, Fx_error, err_r_sum, err_h_sum, err_u_sum, t);
+dyn = [x; y; h; u; v; r; u0;v0; r0;t0;p_u; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_u_sum; h0; t];
 matlabFunction(ddyn, 'File', 'dyn_dir_change', 'vars', {tdummy dyn udummy});
 
 % contigency braking (high-speed)
@@ -87,14 +87,14 @@ ud = U(1,2);
 vd = U(2,2);
 rd = U(3,2);
 hd = subs(Z(1),t,tpk_dir);
-ddyn = gen_closed_loop_dyn (hd-th0, u, ud, v, vd, r, rd,h, Fy_error, Fx_error, err_r_sum, err_h_sum, err_u_sum, t);
-dyn = [x; y; h; u; v; r; u0;v0; r0;t0;p_u; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_u_sum;th0; t];
+ddyn = gen_closed_loop_dyn (hd-h0, u, ud, v, vd, r, rd,h, Fy_error, Fx_error, err_r_sum, err_h_sum, err_u_sum, t);
+dyn = [x; y; h; u; v; r; u0;v0; r0;t0;p_u; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_u_sum;h0; t];
 matlabFunction(ddyn, 'File', 'dyn_dir_brake', 'vars', {tdummy dyn udummy});
 
 % contigency braking (low-speed)
 ud = U(1,3);
 ddyn = gen_low_speed (u,ud,h, rd,t,err_u_sum);
-dyn = [x; y; h; u; v; r;u0;v0; r0;t0;p_u; p_y; brake_time;  Fy_error;  err_r_sum; err_h_sum;err_u_sum; th0; t];
+dyn = [x; y; h; u; v; r;u0;v0; r0;t0;p_u; p_y; brake_time;  Fy_error; Fx_error; err_r_sum; err_h_sum;err_u_sum; h0; t];
 matlabFunction(ddyn, 'File', 'dyn_dir_slow', 'vars', {tdummy dyn udummy});
 
 

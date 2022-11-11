@@ -30,7 +30,7 @@ Mu = max_Fx_uncertainty / m;
 b_u_pro = Mu/5;
 b_u_off = 0;
 max_Fy_uncertainty = 10;
-Mr = lr*(max_Fyr_uncertainty)/Izz;
+Mr = lr*(max_Fy_uncertainty)/Izz;
 
 
 %% auxiliaries 
@@ -48,24 +48,23 @@ tbrk2 =1;
 Cw = 3.41;
 Caf2 = 1;
 Car2 = 1;     
-Cbf  = 1e5;
-Cbr  = 1e5;
+% Cbf  = 1e5;
+% Cbr  = 1e5;
 % C_delta = 3;
 % K_delta = 5; 
-Kw = 20;
+% Kw = 20;
 
 % %Current Control Stuff
-C_friction_1 = 6.0897; % NEVER USE CURRENT CONTROL FOR CARS
-C_friction_2 = 10.5921;
-C_current    = 0.4642;
+% C_friction_1 = 6.0897; % NEVER USE CURRENT CONTROL FOR CARS
+% C_friction_2 = 10.5921;
+% C_current    = 0.4642;
 
-max_Fy_uncertainty = 10;
-max_Fy_uncertainty_braking = 0.5; 
+% max_Fy_uncertainty = 10; 
 max_Fy_uncertainty_spd = 2; 
-max_Fyr_uncertainty = 10;
-max_Fyr_uncertainty_braking = 0.5; 
-max_Fyr_uncertainty_spd = 2; 
+% max_Fyr_uncertainty = 10;
+% max_Fyr_uncertainty_braking = 0.5; 
+% max_Fyr_uncertainty_spd = 2; 
 max_Fx_uncertainty_braking  = 0;
-
+max_Fy_uncertainty_braking = 0.5;
 
 

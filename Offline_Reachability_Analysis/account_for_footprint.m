@@ -1,4 +1,4 @@
-function err_zono = get_error_zono(head_zono, gen, dim_total)
+function err_zono = account_for_footprint(head_zono, gen, dim_total)
     headingc = center(head_zono);
     headingg = abs(generators(head_zono));
     if isempty(headingg)
