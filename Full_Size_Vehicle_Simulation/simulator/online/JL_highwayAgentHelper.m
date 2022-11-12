@@ -7,14 +7,11 @@ classdef JL_highwayAgentHelper < agentHelper
         spdlb = 5;% vx
         spdub = 30;%vx
         
-        kAug = 1;
-        kAyg = 0.1;
-        kAygfine = 0.05;
         % epsilon for boundary check
         eps = 0.001;
         
-        num_Ay_lane;
-        num_Ay_dir;
+        num_py_lane;
+        num_py_dir;
         
         HLP;
         % reference for a single sampling time, needs this so there is a
@@ -23,11 +20,7 @@ classdef JL_highwayAgentHelper < agentHelper
         y_des;
         
         % from FRS, to determine initial condition and desired condition
-        h_array
-        y_array
-        v_array
-        v_array_original = 0.6:0.1:1.3;
-        del_array
+        u0_array
         plot_flag = 1;
         pause_flag = 0;
         draw_subplots = 0;
@@ -41,19 +34,13 @@ classdef JL_highwayAgentHelper < agentHelper
         t_real_start = [];
         t_proposed_start = [];
         
-        zono_spd; %for other t0 zonotopes
+
         
         prev_action = -1;
         cur_t0_idx = 1;
         Ay_idx = 0;
-        px_dir;
-        py_dir;
-        px_dir_fun;
-        py_dir_fun;
-        px_dir_fun_jacobian;
-        py_dir_fun_jacobian;timeout
-        
-        t_plan=1.5;% don't change this, crucial in determining reference start t0
+
+        t_plan=1.5;
         t_timeout = 600;
         
         fminconopt = [];
@@ -62,11 +49,8 @@ classdef JL_highwayAgentHelper < agentHelper
         
         plot_ax;
         
-        S %put pointer of S here so can do more things
+        S 
         
-        master_plot_handle_frs_2; %figure 1 FRS;
-        master_plot_handle_frs_1; %figure 1 FRS;
-        master_plot_handle_frs_0; %figure 1 FRS;
         FRS_helper_handle = struct;
         
         dynamic_obs_plot; %figure 2 dynamics stuff;
@@ -96,15 +80,15 @@ classdef JL_highwayAgentHelper < agentHelper
             AH@agentHelper(A,FRS_obj,varargin{:});
             AH.HLP = HLP;
             info_file_dir = load('dir_change_Ay_info.mat');
-            AH.num_Ay_dir = info_file_dir.num_Ay;
+            AH.num_py_dir = info_file_dir.num_Ay;
             info_file_lan = load('lane_change_Ay_info.mat');
-            AH.num_Ay_lane = info_file_lan.num_Ay;
+            AH.num_py_lane = info_file_lan.num_Ay;
             
             %             AH.y_des = AH.fA.state(2,end);
             %             AH.h_array = AH.zono_full.h_range; % array of range of acceptable parameter values
             %             AH.y_array = AH.zono_full.y_range;
             %             %             AH.v_array = AH.zono_full.v_range;
-            AH.v_array = info_file_dir.u0_vec; % have to start at 5, edit examine_FRS if you don't want to
+            AH.u0_array = info_file_dir.u0_vec; % have to start at 5, edit examine_FRS if you don't want to
             % start at 5
             
             %             AH.zono_full.v_range = AH.zono_full.v_range;
@@ -152,157 +136,6 @@ classdef JL_highwayAgentHelper < agentHelper
             %             AH.py_dir_fun_jacobian = jacobian(AH.py_dir_fun, [x1 x2]);
             %             AH.predict_eval_fun = [px_dir_fun; py_dir_fun]
         end
-        function [time, delta, w_cmd, exit_status]= gen_control_inputs_gpops(AH, world_info, agent_state, waypts)
-%         x_des = waypts(:,1);
-            O_all = world_info.obstacles;
-    %             dyn_O.time  = world_info.dyn_obstacles_time;
-            dyn_O.obs   = world_info.dyn_obstacles;
-            bounds_obs  = world_info.bounds;
-            xlo = bounds_obs(1) ; xhi = bounds_obs(2) ;
-            ylo = bounds_obs(3) ; yhi = bounds_obs(4) ;
-
-            Blower = [xlo, xhi, xhi, xlo, xlo ; ylo, ylo, ylo-1, ylo-1, ylo] ;
-            Bupper = [xlo, xhi, xhi, xlo, xlo ; yhi, yhi, yhi+1, yhi+1, yhi] ;
-            B = [Blower, nan(2,1), Bupper, nan(2,1)] ;% make top and bottom bounds into obstacles
-
-            O = [O_all B] ;
-            load_const
-            mirror_flag = 0;
-            dummy_state = agent_state;
-            dummy_state(3) = 0;
-
-            %setup final state
-            waypts = world_to_local_mirror(dummy_state,waypts, mirror_flag);
-
-            %set up constraints
-            O = world_to_local_mirror(dummy_state,O,mirror_flag );
-    %             for obs_time_idx = 1:length(dyn_O.obs)
-            dyn_O.obs{1} = world_to_local_mirror(dummy_state,dyn_O.obs{1},mirror_flag );
-            dyn_O.obs{1} = reshape(dyn_O.obs{1},2,6,[]);
-            
-            % parameter: x_waypt, y_waypt, car x, car y, car v, 
-            initialguess.parameter = 1000*ones(1,2+3*6); start_idx = 3;
-            
-            for traffic_idx = 1:size(dyn_O.obs{1}, 3) % each car %slecting the car is kind of random, needs sorting here
-                if start_idx > length(initialguess.parameter)
-                    break
-                end
-                    vehicle_obs_pos_before = dyn_O.obs{1}(:,1:4,traffic_idx);
-                    vehicle_obs_pos_before = mean(vehicle_obs_pos_before,2);
-                    vehicle_vel             = dyn_O.obs{2}(traffic_idx);
-                    
-                if vehicle_obs_pos_before(1,1)>100 ||vehicle_obs_pos_before(1,1) < -20
-                    continue; 
-                end
-                initialguess.parameter(start_idx) = vehicle_obs_pos_before(1);
-                initialguess.parameter(start_idx+1) = vehicle_obs_pos_before(2);
-                initialguess.parameter(start_idx+2) = vehicle_vel;
-                start_idx = start_idx + 3;
-            end
-
-            
-            tfmin = 3; tmax = 3; t0 = 0;
-
-            x0 = 0; y0 = 0; h0 = agent_state(3); u0 = agent_state(4);v0 = agent_state(5); r0 = agent_state(6); w0 = agent_state(7);
-
-            bounds.phase.initialtime.lower = t0;
-            bounds.phase.initialtime.upper = t0;
-            bounds.phase.finaltime.lower = tfmin;
-            bounds.phase.finaltime.upper = tmax;
-
-
-            bounds.phase.initialstate.lower = [x0,y0,h0,u0,v0,r0,w0];
-            bounds.phase.initialstate.upper = [x0,y0,h0,u0,v0,r0,w0];
-            bounds.phase.state.lower = [-inf,-inf, -2, 6,-4,-4,6];
-            bounds.phase.state.upper = [inf,  inf,  2,20, 4, 4,20];
-            bounds.phase.finalstate.lower = [-inf,-inf, -2, 6,-4,-4,6];
-            bounds.phase.finalstate.upper = [inf,  inf,  2,20, 4, 4,20];
-            %first control is steering, second is w_cmd
-            bounds.phase.control.lower = [-0.4,6];
-            bounds.phase.control.upper = [ 0.4,20];
-
-            initialguess.phase.time      = [0; tfmin];
-            guess_initial_state = bounds.phase.initialstate.lower;
-            guess_final_state = [x0+u0*tmax y0 h0 u0 v0 r0 w0];
-            initialguess.phase.state     = [guess_initial_state ; guess_final_state];
-            initialguess.phase.control   = [0.1 15; 0.1 15];
-            
-            initialguess.parameter(1:2) = waypts(1:2)';
-            ego_size = sqrt(2);%for proper safe , need sqrt(2.4^2 +1^2)
-            
-            bounds.parameter.lower = initialguess.parameter;
-            bounds.parameter.upper = initialguess.parameter;
-            bounds.phase.path.lower = [O(2,1)+ego_size   zeros(1,4*6)];%takes care of 4 cars
-            bounds.phase.path.upper = [O(2,7)-ego_size  inf*ones(1,4*6)] ;
-            %constarints: y, car 1, car 2
-
-
-            mesh.method          = 'hp-LiuRao-Legendre';
-            mesh.tolerance       = 1e-3;
-            mesh.maxiterations   = 8;
-            mesh.colpointsmin    = 2;
-            mesh.colpointsmax    = 14;
-            mesh.phase.colpoints = 4*ones(1,10);
-            mesh.phase.fraction  = 0.1*ones(1,10);
-
-
-
-            setup.name                           = 'Car_Highway';
-            setup.functions.continuous           = @car_highway_dynamics_gpops;
-            setup.functions.endpoint             = @car_highway_endpoint_gpops;
-            setup.displaylevel                   = 0;
-            setup.bounds                         = bounds;
-            setup.guess                          = initialguess;
-            setup.mesh                           = mesh;
-            setup.nlp.solver                     = 'ipopt';
-%             setup.nlp.snoptoptions.tolerance     = 1e-6;
-%             setup.nlp.snoptoptions.maxiterations = 20000;
-            setup.nlp.ipoptoptions.linear_solver = 'ma57';
-            setup.nlp.ipoptoptions.tolerance     = 1e-3;
-            setup.nlp.ipoptoptions.maxiterations     = 1000;
-%             setup.nlp.ipoptoptions.max_wall_time = 20;
-            setup.derivatives.supplier           = 'adigator';%'';
-            setup.derivatives.derivativelevel    = 'second';
-            setup.method                         = 'RPM-Differentiation';
-
-            
-            setup.adigatorgrd.continuous = @car_highway_dynamics_gpopsADiGatorGrd;
-            setup.adigatorgrd.endpoint = @car_highway_endpoint_gpopsADiGatorGrd;
-            setup.adigatorhes.continuous = @car_highway_dynamics_gpopsADiGatorHes;
-            setup.adigatorhes.endpoint = @car_highway_endpoint_gpopsADiGatorHes;
-            
-            
-            
-            tic
-            output = gpops2(setup);
-            toc
-            exit_status = output.result.nlpinfo;
-            
-            figure(3);clf;
-            subplot(3,1,1);hold on;
-            plot(output.result.solution.phase.state(:,1),output.result.solution.phase.state(:,2));
-            viscircles([initialguess.parameter(3),initialguess.parameter(4)],sqrt(2))
-            viscircles([initialguess.parameter(6),initialguess.parameter(7)],sqrt(2))
-            viscircles([initialguess.parameter(9),initialguess.parameter(10)],sqrt(2))
-            viscircles([initialguess.parameter(12),initialguess.parameter(13)],sqrt(2))
-            viscircles([initialguess.parameter(15),initialguess.parameter(16)],sqrt(2))
-            viscircles([initialguess.parameter(18),initialguess.parameter(19)],sqrt(2))
-            yline(bounds.phase.path.lower(1));
-            yline(bounds.phase.path.upper(1));
-            axis equal
-            xlim([-40, 100]);
-            subplot(3,1,2)
-            plot(output.result.solution.phase.time,output.result.solution.phase.state(:,4));
-            legend('spd m/s')
-            subplot(3,1,3);
-            plot(output.result.solution.phase.time,output.result.solution.phase.control(:,1));
-            yyaxis right
-            plot(output.result.solution.phase.time,output.result.solution.phase.control(:,2));
-            legend('steering angle','w cmd')
-            time = output.result.solution.phase.time;
-            delta = output.result.solution.phase.control(:,1);
-            w_cmd = output.result.solution.phase.control(:,2);
-        end
         
         
         
@@ -344,7 +177,7 @@ classdef JL_highwayAgentHelper < agentHelper
 
                 type_manu_all = ["Au","dir","lan"];
                 type_text = type_manu_all(type_manu);
-                [~,idxu0] = min(abs(AH.v_array - agent_state(4)));
+                [~,idxu0] = min(abs(AH.u0_array - agent_state(4)));
                 M = AH.zono_full.M_mega{idxu0};
                 
                 if type_manu == 1
@@ -417,7 +250,7 @@ classdef JL_highwayAgentHelper < agentHelper
             load_const
             % REMOVED: ~exist x_des: generated x_des from HLP
             %find all options
-            [~,idxu0] = min(abs(AH.v_array - agent_state(4)));
+            [~,idxu0] = min(abs(AH.u0_array - agent_state(4)));
 %             if agent_state(4) >= 0.55
 %                 [~,idxAuu0] = min(abs([0.7 1.0 1.3 1.6 1.9] - agent_state(4)));
 %                 idxAuu0 = idxAuu0 * 3 + 5;
@@ -432,14 +265,14 @@ classdef JL_highwayAgentHelper < agentHelper
             tblan = M('lantb'); tblan([2,9,12],:) = tblan([2,9,12],:)/2;
             tblan = repmat(tblan,[1,2,1]);
             if size(tbdir,1) > 4
-                tbdir(logical([1 0 1 1 1 1 1 1 0 1 1 0 1 1]),AH.num_Ay_dir+1:end,:) = -tbdir(logical([1 0 1 1 1 1 1 1 0 1 1 0 1 1]),AH.num_Ay_dir+1:end,:);
+                tbdir(logical([1 0 1 1 1 1 1 1 0 1 1 0 1 1]),AH.num_py_dir+1:end,:) = -tbdir(logical([1 0 1 1 1 1 1 1 0 1 1 0 1 1]),AH.num_py_dir+1:end,:);
             else
-                tbdir(logical([1 0 1 1 ]),AH.num_Ay_dir+1:end,:) = -tbdir(logical([1 0 1 1 ]),AH.num_Ay_dir+1:end,:);
+                tbdir(logical([1 0 1 1 ]),AH.num_py_dir+1:end,:) = -tbdir(logical([1 0 1 1 ]),AH.num_py_dir+1:end,:);
             end
             if size(tblan,1) > 4
-                tblan(logical([1 0 1 1 1 1 1 1 0 1 1 0 1 1]),AH.num_Ay_lane+1:end,:) = -tblan(logical([1 0 1 1 1 1 1 1 0 1 1 0 1 1]),AH.num_Ay_lane+1:end,:);
+                tblan(logical([1 0 1 1 1 1 1 1 0 1 1 0 1 1]),AH.num_py_lane+1:end,:) = -tblan(logical([1 0 1 1 1 1 1 1 0 1 1 0 1 1]),AH.num_py_lane+1:end,:);
             else
-                tblan(logical([1 0 1 1]),AH.num_Ay_lane+1:end,:) = -tblan(logical([1 0 1 1]),AH.num_Ay_lane+1:end,:);
+                tblan(logical([1 0 1 1]),AH.num_py_lane+1:end,:) = -tblan(logical([1 0 1 1]),AH.num_py_lane+1:end,:);
             end
             all_tb = {tbAu, tbdir, tblan};
             
@@ -590,12 +423,12 @@ classdef JL_highwayAgentHelper < agentHelper
             %             if norm(x_des(1:2) - agent_state(1:2)) < 0.5
             %                 return;
             %             end
-            if (diridx_with_mirror > AH.num_Ay_dir  && type_manu == 2) || (diridx_with_mirror > AH.num_Ay_lane && type_manu ==  3)
+            if (diridx_with_mirror > AH.num_py_dir  && type_manu == 2) || (diridx_with_mirror > AH.num_py_lane && type_manu ==  3)
                 mirror_flag = 1;
-                if (diridx_with_mirror > AH.num_Ay_dir  && type_manu == 2)
-                    diridx = diridx_with_mirror - AH.num_Ay_dir;
+                if (diridx_with_mirror > AH.num_py_dir  && type_manu == 2)
+                    diridx = diridx_with_mirror - AH.num_py_dir;
                 else
-                     diridx = diridx_with_mirror - AH.num_Ay_lane;
+                     diridx = diridx_with_mirror - AH.num_py_lane;
                 end
                 agent_state(5:6) = -agent_state(5:6);
                 %                 agent_state(3) = -agent_state(3);
