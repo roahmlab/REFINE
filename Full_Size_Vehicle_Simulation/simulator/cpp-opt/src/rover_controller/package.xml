@@ -36,7 +36,6 @@
   <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>tf2_msgs</depend>
-  <depend>fmt</depend>
   <!--   Note that this is equivalent to the following: -->
   <!--   <build_depend>roscpp</build_depend> -->
   <!--   <exec_depend>roscpp</exec_depend> -->

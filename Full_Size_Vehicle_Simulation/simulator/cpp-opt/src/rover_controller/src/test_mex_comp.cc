@@ -340,19 +340,6 @@ SimParam GenerateSimParameter(
         std::cout << "IPOPT SUCCESS [K: " << k << "] [Cost: " << cost << "] [Manu: " << str_manu << "] [RF: " << really_feas << "] [DY: " << dy << "] [X_DES_Y: " << x_des_to_use.y_ << "] [MIRROR: " << mirror_mult << "] [UNMIR FRS DY: " << unmir_frs_dy << "] [IPOPT_ACTUAL: " << ipopt_success << "] [FEAS: " << was_really_feasible << "]" << std::endl;
         std::cout << "Agent State: " << fp_state.x_ << ", " << fp_state.y_ << ", " << fp_state.GetHeading() << std::endl;
         std::cout << "xyh (end): " << *(frs_to_use.xy_centers_.end()-2) << ", " << *(frs_to_use.xy_centers_.end()-1) << ", " << frs_to_use.h_centers_.back() << std::endl;
-        
-        //const std::string output_str = fmt::format(
-        //   "IPOPT: SUCCESS [K: {:.2f} (Man: {:.2f})] [MANU: {}] [MIR: {}] "
-        //   "[COST: {:.2f}] [IP_SUCCESS: {}] [REALLY: {}] [X: {:.4f}] [Y: "
-        //   "{:.4f}] [H: {:.4f}] [U: {:.4f}] [V: {:.4f}] [R: {:.4f}] [app idx: "
-        //   "{:d}]\n",
-        //   param_vals_mirrored.at(total_idx), mnlp->GetFeasibleCost(),
-        //   ToString(frs_select_info.manu_type_), mirror, final_obj,
-        //   ipopt_success, was_really_feasible, fp_state.x_, fp_state.y_,
-        //   fp_state.GetHeading(), fp_state.u_, fp_state.v_, fp_state.r_,
-        //   app_idx);
-        //std::cout << output_str;
-        //TGUARD_ROS_INFO_STR(output_str);
       } else {
         cost_vals.at(total_idx) = kBigCost;
         success_vals.at(total_idx) = false;

@@ -45,7 +45,6 @@ if (PARAM_GEN_ENABLE)
   include_directories(${IPOPT_INCLUDE_DIRS})
 endif()
 
-add_subdirectory(fmt)
 
 if (PARAM_GEN_ENABLE)
   catkin_package(
@@ -81,10 +80,10 @@ function(add_rover_executable EXEC_TARGET_NAME EXEC_FNAME IS_MEX)
   add_dependencies(${EXEC_TARGET_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
   if(PARAM_GEN_ENABLE)
     target_include_directories(${EXEC_TARGET_NAME} PUBLIC include ${catkin_INCLUDE_DIRS} ipopt/include /usr/include/python3.8 )
-    target_link_libraries(${EXEC_TARGET_NAME} ${catkin_LIBRARIES} fmt::fmt ipopt python3.8 pthread)
+    target_link_libraries(${EXEC_TARGET_NAME} ${catkin_LIBRARIES} ipopt python3.8 pthread)
   else()
     target_include_directories(${EXEC_TARGET_NAME} PUBLIC src include ${catkin_INCLUDE_DIRS} /usr/include/python3.8 )
-    target_link_libraries(${EXEC_TARGET_NAME} ${catkin_LIBRARIES} fmt::fmt python3.8)
+    target_link_libraries(${EXEC_TARGET_NAME} ${catkin_LIBRARIES} python3.8)
   endif()
 endfunction()
 
