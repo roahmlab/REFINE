@@ -6,7 +6,6 @@
 
 #include "common.hpp"       // for IndexT
 #include "manu_type.hpp"    // for ManuType
-#include "point_xy.hpp"     // for PointXY
 #include "simple_util.hpp"  // for Interval
 
 /// @file frs_loader.hpp Contains data structures to hold the Forward Reachable

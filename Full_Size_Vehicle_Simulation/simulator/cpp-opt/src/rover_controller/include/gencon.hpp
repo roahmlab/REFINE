@@ -1,8 +1,6 @@
 #ifndef ROAHM_GENCON_HPP_
 #define ROAHM_GENCON_HPP_
 
-#include <jsk_recognition_msgs/PolygonArray.h>  // for PolygonArray
-
 #include <iosfwd>  // for ostream
 #include <memory>  // for unique_ptr, shared_ptr
 #include <string>  // for string
@@ -199,17 +197,6 @@ struct ZonoInfo {
         cum_size_arr_{},
         zono_arr_{} {}
 };
-
-/// Convert obstacles in the world frame into their zonotope representations in
-/// the local frame of reference.
-/// \param latest_read_obs the latest set of obstacles
-/// \param local_frame the local frame pose w.r.t. the world frame
-/// \param mirror true if the y-axis should be mirrored, false otherwise
-/// \return the obstacles converted into their zonotope representations in the
-/// local frame of reference
-ObsInfo ConvertObsToZonoWithHeading(
-    const jsk_recognition_msgs::PolygonArray& latest_read_obs,
-    const PointXYH& local_frame, bool mirror);
 
 /// TODO
 struct Constraints {

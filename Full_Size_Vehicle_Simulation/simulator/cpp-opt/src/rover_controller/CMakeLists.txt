@@ -25,8 +25,7 @@ if (PARAM_GEN_ENABLE)
 endif()
 
 find_package(catkin REQUIRED
-        roscpp message_generation message_runtime std_msgs jsk_recognition_msgs
-        geometry_msgs joy vesc_msgs tf2_msgs rover_control_msgs state_estimator)
+        roscpp message_generation message_runtime std_msgs geometry_msgs joy tf2_msgs)
 
 if (PARAM_GEN_ENABLE)
   add_compile_options(--std=c++17 -O3 -fopenmp )
@@ -52,14 +51,12 @@ if (PARAM_GEN_ENABLE)
   catkin_package(
     INCLUDE_DIRS include ${IPOPT_INCLUDE_DIRS}
     LIBRARIES rover_controller
-    CATKIN_DEPENDS std_msgs geometry_msgs vesc_msgs jsk_recognition_msgs rover_control_msgs tf2_msgs state_estimator
-  )
+    CATKIN_DEPENDS std_msgs geometry_msgs tf2_msgs)
 else()
   catkin_package(
     INCLUDE_DIRS include
     LIBRARIES rover_controller
-    CATKIN_DEPENDS std_msgs geometry_msgs vesc_msgs jsk_recognition_msgs rover_control_msgs tf2_msgs state_estimator
-  )
+    CATKIN_DEPENDS std_msgs geometry_msgs tf2_msgs)
 endif()
 
 # For files

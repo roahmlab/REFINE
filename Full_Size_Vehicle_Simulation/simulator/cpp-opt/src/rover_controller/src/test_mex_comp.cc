@@ -13,14 +13,9 @@
 #include "fl_zono_ipopt_problem.hpp"
 #include "frs_loader.hpp"
 #include "gencon.hpp"
-#include "jsk_recognition_msgs/PolygonArray.h"  // for PolygonArray
 #include "mex.hpp"
 #include "mexAdapter.hpp"
 #include "rover_state.hpp"
-#include "rover_control_msgs/GenParamInfo.h"            // for GenParamInfo
-#include "rover_control_msgs/MatlabPlotInfo.h"          // for MatlabPlotInfo
-#include "rover_control_msgs/OnlineDebugMsg.h"          // for OnlineDebugMsg
-#include "rover_control_msgs/RoverDebugStateStamped.h"  // for RoverDebugSta...
 
 
 namespace roahm {
@@ -373,9 +368,6 @@ SimParam GenerateSimParameter(
             << std::endl;
   std::cout << "Successful: " << successful_runs << std::endl;
   std::cout << "Failed:     " << failure_runs << std::endl;
-  rover_control_msgs::OnlineDebugMsg ret_val;
-  rover_control_msgs::MatlabPlotInfo mat_ret;
-  mat_ret.was_successful = false;
 
   // JL add to debug
   std::cout << "cost value \n";
@@ -644,63 +636,6 @@ class MexFunction : public matlab::mex::Function {
 
     param_output = factory.createArray<double>({6, 1}, {au_val, ay_val, t0_idx, matlab_manu_type, ret.idx0_, ret.idx1_});
     std::cout << "Ran Simulation" << std::endl;
-
-/*
-    // Test
-    ::roahm::RoverState test_state{0.0, 0.0, 0.0, 15.0, 0.0, 0.0, 0.0};
-    const int num_tests = 1;
-    for (int q = 0; q < num_tests; ++q) {
-      std::cout << "TEST NO: " << q << std::endl;
-      jsk_recognition_msgs::PolygonArray test_obs;
-      // std::random_device rd;
-      const bool smaller_r = (q < (num_tests * 1) / 4);
-      const double min_r = smaller_r ? 6.0 : 17.0;
-      const double max_r = smaller_r ? 16.0 : 25.0;
-      // const double max_r = 25.0;
-      std::mt19937 gen(0);
-      std::uniform_real_distribution<> distr(min_r, max_r);
-      std::uniform_real_distribution<> distr_w(0.05, 5.0);
-      const int n_obs = 40;
-      for (int i = 0; i < n_obs; ++i) {
-        auto& polygons_st = test_obs.polygons.emplace_back();
-        auto& polygon = polygons_st.polygon;
-        auto& pts = polygon.points;
-        const double r = distr(gen);
-        const double pct =
-            (static_cast<double>(i) / static_cast<double>(n_obs - 1));
-        const double theta = (pct * M_PI) - (M_PI / 2.0);
-        const double x0 = r * std::cos(theta);
-        const double y0 = r * std::sin(theta);
-        // const double w = 5.0;
-        // const double h = 1.0;
-        const double w = distr_w(gen);
-        const double h = distr_w(gen);
-        ::geometry_msgs::Point32 pt0;
-        pt0.x = x0 + 0;
-        pt0.y = y0 + 0;
-        pt0.z = 0;
-        ::geometry_msgs::Point32 pt1;
-        pt1.x = x0 + w;
-        pt1.y = y0 + 0;
-        pt1.z = 0;
-        ::geometry_msgs::Point32 pt2;
-        pt2.x = x0 + w;
-        pt2.y = y0 + h;
-        pt2.z = 0;
-        ::geometry_msgs::Point32 pt3;
-        pt3.x = x0 + w;
-        pt3.y = y0 + h;
-        pt3.z = 0;
-        pts.emplace_back(pt0);
-        pts.emplace_back(pt1);
-        pts.emplace_back(pt2);
-        pts.emplace_back(pt3);
-      }
-      ::roahm::PointXYH test_x_des{10.0, 0.0, 0.0};
-      auto q_val = GenerateSimParameter(frs_, test_obs, test_x_des, test_state);
-      std::cout << "RES: " << q_val.res_ << std::endl;
-    }
-*/
   }
 };
 

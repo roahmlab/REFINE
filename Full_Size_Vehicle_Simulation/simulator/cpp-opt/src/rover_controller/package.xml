@@ -34,12 +34,8 @@
   <!-- Use depend as a shortcut for packages that are both build and exec dependencies -->
   <depend>roscpp</depend>
   <depend>std_msgs</depend>
-  <depend>jsk_recognition_msgs</depend>
   <depend>geometry_msgs</depend>
-  <depend>vesc_msgs</depend>
   <depend>tf2_msgs</depend>
-  <depend>rover_control_msgs</depend>
-  <depend>state_estimator</depend>
   <depend>fmt</depend>
   <!--   Note that this is equivalent to the following: -->
   <!--   <build_depend>roscpp</build_depend> -->
