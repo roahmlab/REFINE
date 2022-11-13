@@ -146,7 +146,7 @@ RUN apt-get install -yq python3-empy
 #
 # Install IPOPT
 #
-COPY data/coinhsl-2021.05.05.tar.gz /tmp/coinhsl-2021.05.05.tar.gz
+COPY util/coinhsl-2021.05.05.tar.gz /tmp/coinhsl-2021.05.05.tar.gz
 #COPY setup-ipopt-and-hsl.sh /tmp/setup-ipopt-and-hsl.sh
 #RUN /tmp/setup-ipopt-and-hsl.sh
 #RUN chmod -R 777 /installs

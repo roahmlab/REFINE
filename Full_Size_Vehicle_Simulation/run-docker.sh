@@ -18,7 +18,7 @@ docker run -it --rm                     \
   -v /dev/shm:/dev/shm                  \
   -v /etc/timezone:/etc/timezone:ro     \
   -v /etc/localtime:/etc/localtime:ro   \
-  -v $(pwd)/data:/data:ro               \
+  -v $(pwd)/../util:/data:ro               \
   -v $(pwd)/simulator:/simulator        \
   -w /simulator                         \
   roahm/refine_sim /usr/bin/bash
