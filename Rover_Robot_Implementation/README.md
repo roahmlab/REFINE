@@ -3,7 +3,7 @@ The low level controller is located in `low-level-controller/src/rover_controlle
 
 The online parameter generation is located in `online-parameter-generation/src/rover_controller/src/param_gen.cc`
 
-We summarize several components of the rover experiment here for interested readers. 
+We summarize several components of the rover experiment here for interested readers. Note references to equations correspond to equation numbers from the paper.
 
 ## 1. Environment Sensing
 
@@ -12,7 +12,7 @@ We perform simultaneous localization and mapping (SLAM) using [Cartographer](htt
 ## 2. System Identification of Tire Models
 
 The goal of system identification is to specify necessary parameters that describe dynamics of the Rover.
-Because parameters like mass, length, and moment of inertia can be directly measured, we focus on identification of tire force related parameters including $\lambda^{\text{cri}}$, $\alpha^{\text{cri}}$, $\bar{\mu}$, $\bar{c}_ {\alpha f}$ and $\bar{c}_{\alpha\text{r}}$, and explain how we generate the computational error $\Delta_u$, $\Delta_v$, $\Delta_r$ in \eqref{eq:highspeed_noise} as well as their bounding parameters $\bpro$, $\boff$, $M_u$, $M_v$, and $M_r$ in the next subsection.
+Because parameters like mass, length, and moment of inertia can be directly measured, we focus on identification of tire force related parameters including $\lambda^{\text{cri}}$, $\alpha^{\text{cri}}$, $\bar{\mu}$, $\bar{c}_ {\alpha\text{f}}$ and $\bar{c} _ {\alpha\text{r}}$, and explain how we generate the computational error $\Delta_u$, $\Delta_v$, $\Delta_r$ in (14) as well as their bounding parameters $b^{\text{pro}} _ u$, $b^{\text{off}} _ u$, $M_u$, $M_v$, and $M_r$ in the next subsection.
 
 
 ## 3. Model Parameters 
