@@ -11,7 +11,7 @@ An illustration of the speed change maneuvers described by (57), (58), and (60) 
 
 <figure>
 <p align="center">
-  <img height="300" src="../Image/udes.png"/>
+  <img height="500" src="../Image/udes.png"/>
    <figcaption> <i> Fig. R.1 -  Examples of $\udes(t,p)$ with $u_0=1.0$ [m/s], $\uc=0.5$ [m/s], $\tnb=1.5$ [s], $\amax=-1.5$ [m/s${}^2$], and $p_u$ taking values of 0.6, 1.2 and 2.0 from top to bottom. Note zero lateral control is commanded in all 3 examples. </i> </figcaption>
 </p>
  </figure>
