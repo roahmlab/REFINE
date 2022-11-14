@@ -32,7 +32,7 @@ To identify the parameters related to lateral tire forces, we follow a similar p
   <img height="300" src="../Image/slip_angle.png"/>
 </p>
 
-Thus we set $\alphac=0.15$, and fit $\bar c_{\alpha\text{f}}$ and $\bar c_{\alpha\text{r}}$ in \eqref{eq: linear lat tire force} by performing least squares over collected data that satisfies $|\alpha_\text{i}(t)|\leq\alphac$ at any time.   
+Thus we set $\alpha^{\text{cri}}=0.15$, and fit $\bar c_{\alpha\text{f}}$ and $\bar c_{\alpha\text{r}}$ in (13) by performing least squares over collected data that satisfies $|\alpha_\text{i}(t)|\leq\alpha^{\text{cri}}$ at any time.   
 
 ## 3. Model Parameters 
 
