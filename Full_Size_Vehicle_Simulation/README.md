@@ -26,6 +26,5 @@ The vehicle parameters used in simulation are summarized in the following figure
 <figure>
 <p align="center">
   <img height="300" src="../Image/simulation_params.png"/>
-  <figcaption> <i> Fig. R.5 - Rover model parameters and REFINE controller parameters. </i> </figcaption>
 </p>
  </figure>
