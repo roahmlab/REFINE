@@ -48,7 +48,7 @@ Results of system identification are summarized in Fig. R.3 together with contro
 </p>
  </figure>
  
-## Controller Performance
+## 4. Controller Performance
 
 An example of tracking performance of the proposed controller on the Rover with identified parameters is shown in Fig. R.4.
 
