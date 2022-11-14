@@ -12,16 +12,16 @@ An illustration of the speed change maneuvers described by (57), (58), and (60) 
 <figure>
 <p align="center">
   <img height="500" src="../Image/udes.png"/>
-   <figcaption> <i> Fig. R.1 -  Examples of $\udes(t,p)$ with $u_0=1.0$ [m/s], $\uc=0.5$ [m/s], $\tnb=1.5$ [s], $\amax=-1.5$ [m/s${}^2$], and $p_u$ taking values of 0.6, 1.2 and 2.0 from top to bottom. Note zero lateral control is commanded in all 3 examples. </i> </figcaption>
+   <figcaption> <i> Fig. R.1 -  Examples of $u^{\text{des}}(t,p)$ with $u_0=1.0$ [m/s], $u^{\text{cri}}=0.5$ [m/s], $t_m=1.5$ [s], $a^{\text{dec}}=-1.5$ [m/s${}^2$], and $p_u$ taking values of 0.6, 1.2 and 2.0 from top to bottom. Note zero lateral control is commanded in all 3 examples. </i> </figcaption>
 </p>
  </figure>
 
-An illustration of the direction change maneuvers described by (57), (58), and (61) can be found in Fig R.2. #real-cool-heading
+An illustration of the direction change maneuvers described by (57), (58), and (61) can be found in Fig R.2. 
 
 <figure>
 <p align="center">
   <img height="150" src="../Image/des_dir_change.png"/>
-   <figcaption> <i> Fig. R.2 -  Examples of $\hdes(t,p)$ and $\rdes(t,p)$ to achieve direction changes with $u_0=1.0$ [m/s], $\tnb=1.5$ [s], $\hdes_1=\frac{20}{27}$, $\hdes_2=\frac{27}{10}$, and $p_y$ taking values of -0.4, 0.4 and 0.8 from top to bottom. Note $p_u$ is set as $u_0$ to maintain the vehicle longitudinal speed before $\tnb$ among all 3 examples. </i> </figcaption>
+   <figcaption> <i> Fig. R.2 -  Examples of $\hdes(t,p)$ and $\rdes(t,p)$ to achieve direction changes with $u_0=1.0$ [m/s], $t_m=1.5$ [s], $h^{\text{des}}_1=\frac{20}{27}$, $h^{\text{des}}_2=\frac{27}{10}$, and $p_y$ taking values of -0.4, 0.4 and 0.8 from top to bottom. Note $p_u$ is set as $u_0$ to maintain the vehicle longitudinal speed before $t_m$ among all 3 examples. </i> </figcaption>
 </p>
  </figure>
 
