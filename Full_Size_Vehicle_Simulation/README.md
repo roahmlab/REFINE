@@ -18,3 +18,14 @@ cd util
   1. Run `./run-matlab.sh`. MATLAB needs to be activated at the first time when it runs in the docker. In case when MATLAB requires for an account verification but fails to automatically open a browser, try to log in your account and verify the account [online](https://matlab.mathworks.com/) 
   2. Run `./build-cpp-opt.sh` to build the necessary MEX file
   3. In MATLAB, open `JL_run_highway_simulation.m` and run the script
+
+## Vehicle and Control Parameters
+
+The vehicle parameters used in simulation are summarized in the following figure along with controller gains that are chosen to satisfy the conditions in Lemma 14.
+
+<figure>
+<p align="center">
+  <img height="300" src="../Image/simulation_params.png"/>
+  <figcaption> <i> Fig. R.5 - Rover model parameters and REFINE controller parameters. </i> </figcaption>
+</p>
+ </figure>
