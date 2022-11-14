@@ -5,7 +5,7 @@ The online parameter generation is located in `online-parameter-generation/src/r
 
 We summarize several components of the rover experiment here for interested readers. Note references to equations correspond to equation numbers from the paper.
 
-## 1. Desired Trajectories
+## 1. Desired Trajectories 
 
 An illustration of the speed change maneuvers described by (57), (58), and (60) can be found in Fig R.1.
 
