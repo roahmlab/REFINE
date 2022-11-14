@@ -54,7 +54,7 @@ An example of tracking performance of the proposed controller on the Rover with 
 
 <figure>
 <p align="center">
-  <img height="300" src="../Image/tracking.png"/>
+  <img height="300" src="../Image/tracking2.png"/>
   <figcaption> <i> Fig. R.4 - An illustration of the tracking performance of the Rover with the proposed controller and identified parameters in Fig. R.3. </i> </figcaption>
 </p>
  </figure>
