@@ -15,7 +15,7 @@ The goal of system identification is to specify necessary parameters that descri
 Because parameters like mass, length, and moment of inertia can be directly measured, we focus on identification of tire force related parameters including $\lambda^{\text{cri}}$, $\alpha^{\text{cri}}$, $\bar{\mu}$, $\bar{c}_ {\alpha\text{f}}$ and $\bar{c} _ {\alpha\text{r}}$, and explain how we generate the computational error $\Delta_u$, $\Delta_v$, $\Delta_r$ in (14) as well as their bounding parameters $b^{\text{pro}} _ u$, $b^{\text{off}} _ u$, $M_u$, $M_v$, and $M_r$ in the next subsection. Note this system identification is done by using a motion capture system; however, when REFINE is applied, the motion capture system is not used.
 
 Recall the actual tire models in (6),(7), (10), and (11) become saturated at large slip ratios and slip angles. However, during experiments, the Rover is always expected to operate in linear regimes of tires by Assumption 3. Thus, to determine the tire force-related parameters of the Rover, we need to identify the critical slip ratio and critical slip angle at which tire force saturation begins, then fit linear tire models within the linear regimes. To identify the parameters related to longitudinal tire forces, the Rover executed a series of speed change maneuvers in a motion capture system to estimate $u$, $v$, and $r$. $\dot u$ is estimated using the onboard IMU.  Recall the ideal dynamics of longitudinal speed as in (4). By plugging in the speed information from the motion capture system, we generate the longitudinal tire force $F_x(t):=F_{x\text{f}}(t)+F_{x\text{r}}(t)$ that achieves the observed velocity trajectory. Because the Rover is AWD, both the front and the rear tires have the same tire speed and thus the same slip ratio, i.e. $\lambda_\text{f} = \lambda_\text{r}$.  Adding the two equations in (12) results in $F_x(t) = mg\bar\mu\lambda_\text{i}(t)$
-where the subscript "i" can be replaced by either "f" for front tire or "r" for rear tire. Using the information from the encoder of driving motor and $u(t)$, slip ratios of both tires can be computed via (5). As shown in the Fig R.1, the longitudinal tire force saturates when the slip ratio becomes bigger than $0.45$.
+where the subscript "i" can be replaced by either "f" for front tire or "r" for rear tire. Using the information from the encoder of driving motor and $u(t)$, slip ratios of both tires can be computed via (5). As shown in the Fig. R.1, the longitudinal tire force saturates when the slip ratio becomes bigger than $0.45$.
 
 <figure>
 <p align="center">
@@ -26,7 +26,7 @@ where the subscript "i" can be replaced by either "f" for front tire or "r" for 
 
 Thus we set $\lambda^{\text{cri}}=0.45$ and fit $\bar\mu$ from $F_x(t) = mg\bar\mu\lambda_\text{i}(t)$ by performing least squares over collected data that satisfies $|\lambda_\text{i}(t)|\leq\lambda^{\text{cri}}$ at any time.  
 
-To identify the parameters related to lateral tire forces, we follow a similar procedure and let the Rover execute a series of direction change maneuvers with various longitudinal speeds. Ground truth $u$, $v$, and $r$ are again estimated using the motion capture system, and $\dot v$ and $\dot r$ are estimated using the onboard IMU for all time. Recall when $u(t)> u ^{\text{cri}}$, the error-free dynamics of $v$ and $r$ are as in (4). One can then compute $F_\text{yf}(t)$ and $F_\text{yr}(t)$ by using the relevant components of \eqref{eq:highspeed_perfect} for $F_\text{yf}(t)$ and $F_\text{yr}(t)$. Using $u(t)$, $v(t)$, $r(t)$, and the steering motor input, one can compute slip angles for both tires via (8) and (9). As shown in Fig R.2, the lateral tire force saturates when the slip angle becomes bigger than 0.15.
+To identify the parameters related to lateral tire forces, we follow a similar procedure and let the Rover execute a series of direction change maneuvers with various longitudinal speeds. Ground truth $u$, $v$, and $r$ are again estimated using the motion capture system, and $\dot v$ and $\dot r$ are estimated using the onboard IMU for all time. Recall when $u(t)> u ^{\text{cri}}$, the error-free dynamics of $v$ and $r$ are as in (4). One can then compute $F_\text{yf}(t)$ and $F_\text{yr}(t)$ by using the relevant components of \eqref{eq:highspeed_perfect} for $F_\text{yf}(t)$ and $F_\text{yr}(t)$. Using $u(t)$, $v(t)$, $r(t)$, and the steering motor input, one can compute slip angles for both tires via (8) and (9). As shown in Fig. R.2, the lateral tire force saturates when the slip angle becomes bigger than 0.15.
 
 <figure>
 <p align="center">
@@ -39,71 +39,17 @@ Thus we set $\alpha^{\text{cri}}=0.15$, and fit $\bar c_{\alpha\text{f}}$ and $\
 
 ## 3. Model Parameters 
 
-Results of system identification are summarized in Table \ref{table: rover} together with controller gains that are chosen to satisfy the conditions in Lemma \ref{lem:braking}.
-An example of tracking performance of the proposed controller on the Rover with identified parameters is shown in Figure \ref{fig: tracking performance}.
+Results of system identification are summarized in Fig. R.3 together with controller gains that are chosen to satisfy the conditions in Lemma 14.
+An example of tracking performance of the proposed controller on the Rover with identified parameters is shown in Fig. R.4.
 
-<table>
-    <tr>
-        <td>$m$</td>
-        <td>8[kg]</td>
-    </tr>
-    <tr>
-        <td>$ l_	ext{f}              $</td>
-        <td>0.203[m]</td>
-    </tr>
-    <tr>
-        <td>$ l_\text{r}              $</td>
-        <td>0.107[m]</td>
-    </tr>
-    <tr>
-        <td>$ I_\text{zz}             $</td>
-        <td>0.11[kg$\cdot\text{m}^2$]</td>
-    </tr>
-    <tr>
-        <td>$ r_\text{w}              $</td>
-        <td>0.055[m]</td>
-    </tr>
-    <tr>
-        <td>$ \lambda^\text{cric}     $</td>
-        <td>0.15[rad]</td>
-    </tr>
-    <tr>
-        <td>$ \alpha^\text{cric}      $</td>
-        <td>0.45</td>
-    </tr>
-    <tr>
-        <td>$ \bar\mu                 $</td>
-        <td>0.48</td>
-    </tr>
-    <tr>
-        <td>$ \bar c_{\alpha\text{f}} $</td>
-        <td>30.03[N/rad]</td>
-    </tr>
-    <tr>
-        <td>$ \bar c_{\alpha\text{r}} $</td>
-        <td>70.71[N/rad]</td>
-    </tr>
-    <tr>
-        <td>$ \uc                     $</td>
-        <td>0.5[m/s]</td>
-    </tr>
-    <tr>
-        <td>$ L                       $</td>
-        <td>0.31[m]</td>
-    </tr>
-    <tr>
-        <td>$ W                       $</td>
-        <td>0.28[m]</td>
-    </tr>
-    <tr>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr>
-        <td></td>
-        <td></td>
-    </tr>
-</table>
+<figure>
+<p align="center">
+  <img height="300" src="../Image/rover_params.png"/>
+  <figcaption> <i> Fig R.3 - Rover model parameters and REFINE controller parameters. </i> </figcaption>
+</p>
+ </figure>
+ 
+ 
 
 ## Controller Performance
 
