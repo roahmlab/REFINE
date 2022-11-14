@@ -19,18 +19,21 @@ where the subscript "i" can be replaced by either "f" for front tire or "r" for 
 
 <figure>
 <p align="center">
-  <img height="300" src="../Image/slip_ratio.png"/>
+  <img height="150" src="../Image/slip_ratio.png"/>
    <figcaption> <i> Fig R.1 -  System Identification on longitudinal tire force. A linear model is fit to data collected within the linear regime $[-0.45,0.45]$ of slip ratio. </i> </figcaption>
 </p>
  </figure>
 
 Thus we set $\lambda^{\text{cri}}=0.45$ and fit $\bar\mu$ from $F_x(t) = mg\bar\mu\lambda_\text{i}(t)$ by performing least squares over collected data that satisfies $|\lambda_\text{i}(t)|\leq\lambda^{\text{cri}}$ at any time.  
 
-To identify the parameters related to lateral tire forces, we follow a similar procedure and let the Rover execute a series of direction change maneuvers with various longitudinal speeds. Ground truth $u$, $v$, and $r$ are again estimated using the motion capture system, and $\dot v$ and $\dot r$ are estimated using the onboard IMU for all time. Recall when $u(t)> u ^{\text{cri}}$, the error-free dynamics of $v$ and $r$ are as in (4). One can then compute $F_\text{yf}(t)$ and $F_\text{yr}(t)$ by using the relevant components of \eqref{eq:highspeed_perfect} for $F_\text{yf}(t)$ and $F_\text{yr}(t)$. Using $u(t)$, $v(t)$, $r(t)$, and the steering motor input, one can compute slip angles for both tires via (8) and (9). As shown in the next figure, the lateral tire force saturates when the slip angle becomes bigger than 0.15.
+To identify the parameters related to lateral tire forces, we follow a similar procedure and let the Rover execute a series of direction change maneuvers with various longitudinal speeds. Ground truth $u$, $v$, and $r$ are again estimated using the motion capture system, and $\dot v$ and $\dot r$ are estimated using the onboard IMU for all time. Recall when $u(t)> u ^{\text{cri}}$, the error-free dynamics of $v$ and $r$ are as in (4). One can then compute $F_\text{yf}(t)$ and $F_\text{yr}(t)$ by using the relevant components of \eqref{eq:highspeed_perfect} for $F_\text{yf}(t)$ and $F_\text{yr}(t)$. Using $u(t)$, $v(t)$, $r(t)$, and the steering motor input, one can compute slip angles for both tires via (8) and (9). As shown in Fig R.2, the lateral tire force saturates when the slip angle becomes bigger than 0.15.
 
+<figure>
 <p align="center">
   <img height="300" src="../Image/slip_angle.png"/>
+  <figcaption> <i> Fig R.2 - System identification on lateral tire forces. Linear models are fit using data collected within the linear regime $[-0.15,0.15]$ of slip angles. </i> </figcaption>
 </p>
+ </figure>
 
 Thus we set $\alpha^{\text{cri}}=0.15$, and fit $\bar c_{\alpha\text{f}}$ and $\bar c_{\alpha\text{r}}$ in (13) by performing least squares over collected data that satisfies $|\alpha_\text{i}(t)|\leq\alpha^{\text{cri}}$ at any time.   
 
