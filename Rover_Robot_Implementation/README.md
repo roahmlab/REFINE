@@ -44,7 +44,7 @@ An example of tracking performance of the proposed controller on the Rover with 
 
 <table>
     <tr>
-        <td>$ m                       $</td>
+        <td>$m$</td>
         <td>8[kg]</td>
     </tr>
     <tr>
