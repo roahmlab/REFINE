@@ -39,5 +39,109 @@ Thus we set $\alpha^{\text{cri}}=0.15$, and fit $\bar c_{\alpha\text{f}}$ and $\
 
 ## 3. Model Parameters 
 
+Results of system identification are summarized in Table \ref{table: rover} together with controller gains that are chosen to satisfy the conditions in Lemma \ref{lem:braking}.
+An example of tracking performance of the proposed controller on the Rover with identified parameters is shown in Figure \ref{fig: tracking performance}.
+
+<table>
+    <tr>
+        <td>\multicolumn{2}{|c||}{Rover Parameter}</td>
+        <td>\multicolumn{2}{c|}{\methodname{} Controller Parameter}</td>
+    </tr>
+    <tr>
+        <td>\multicolumn{2}{|c||}{(Real World)}</td>
+        <td>\multicolumn{2}{c|}{(Real World)}</td>
+    </tr>
+    <tr>
+        <td>$ m                       $</td>
+        <td>8[kg]</td>
+        <td>$K_u$</td>
+        <td>4.0</td>
+    </tr>
+    <tr>
+        <td>$ l_	ext{f}              $</td>
+        <td>0.203[m]</td>
+        <td>$K_r$</td>
+        <td>5.0</td>
+    </tr>
+    <tr>
+        <td>$ l_\text{r}              $</td>
+        <td>0.107[m]</td>
+        <td>$K_h$</td>
+        <td>8.0</td>
+    </tr>
+    <tr>
+        <td>$ I_\text{zz}             $</td>
+        <td>0.11[kg$\cdot\text{m}^2$]</td>
+        <td>$\kappa_{1,u}$</td>
+        <td>1.2</td>
+    </tr>
+    <tr>
+        <td>$ r_\text{w}              $</td>
+        <td>0.055[m]</td>
+        <td>$\kappa_{2,u}$</td>
+        <td>0.8</td>
+    </tr>
+    <tr>
+        <td>$ \lambda^\text{cric}     $</td>
+        <td>0.15[rad]</td>
+        <td>$\phi_{1,u}$</td>
+        <td>1.2</td>
+    </tr>
+    <tr>
+        <td>$ \alpha^\text{cric}      $</td>
+        <td>0.45</td>
+        <td>$\phi_{2,u}$</td>
+        <td>0.8</td>
+    </tr>
+    <tr>
+        <td>$ \bar\mu                 $</td>
+        <td>0.48</td>
+        <td>$\kappa_{1,r}$</td>
+        <td>0.4</td>
+    </tr>
+    <tr>
+        <td>$ \bar c_{\alpha\text{f}} $</td>
+        <td>30.03[N/rad]</td>
+        <td>$\kappa_{2,r}$</td>
+        <td>0.9</td>
+    </tr>
+    <tr>
+        <td>$ \bar c_{\alpha\text{r}} $</td>
+        <td>70.71[N/rad]</td>
+        <td>$\phi_{1,r}$</td>
+        <td>0.4</td>
+    </tr>
+    <tr>
+        <td>$ \uc                     $</td>
+        <td>0.5[m/s]</td>
+        <td>$\phi_{2,r}$</td>
+        <td>0.9</td>
+    </tr>
+    <tr>
+        <td>$ L                       $</td>
+        <td>0.31[m]</td>
+        <td>$M_u$</td>
+        <td>1.11</td>
+    </tr>
+    <tr>
+        <td>$ W                       $</td>
+        <td>0.28[m]</td>
+        <td>$\bpro$</td>
+        <td>1.2</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td>$\boff$</td>
+        <td>0.51</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td>$M_r$</td>
+        <td>4.864</td>
+    </tr>
+</table>
+
 ## Controller Performance
 
