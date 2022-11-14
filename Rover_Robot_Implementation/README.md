@@ -20,7 +20,7 @@ where the subscript "i" can be replaced by either "f" for front tire or "r" for 
 <figure>
 <p align="center">
   <img height="150" src="../Image/slip_ratio.png"/>
-   <figcaption> <i> Fig R.1 -  System Identification on longitudinal tire force. A linear model is fit to data collected within the linear regime $[-0.45,0.45]$ of slip ratio. </i> </figcaption>
+   <figcaption> <i> Fig. R.1 -  System Identification on longitudinal tire force. A linear model is fit to data collected within the linear regime $[-0.45,0.45]$ of slip ratio. </i> </figcaption>
 </p>
  </figure>
 
@@ -31,7 +31,7 @@ To identify the parameters related to lateral tire forces, we follow a similar p
 <figure>
 <p align="center">
   <img height="300" src="../Image/slip_angle.png"/>
-  <figcaption> <i> Fig R.2 - System identification on lateral tire forces. Linear models are fit using data collected within the linear regime $[-0.15,0.15]$ of slip angles. </i> </figcaption>
+  <figcaption> <i> Fig. R.2 - System identification on lateral tire forces. Linear models are fit using data collected within the linear regime $[-0.15,0.15]$ of slip angles. </i> </figcaption>
 </p>
  </figure>
 
@@ -44,7 +44,7 @@ Results of system identification are summarized in Fig. R.3 together with contro
 <figure>
 <p align="center">
   <img height="300" src="../Image/rover_params.png"/>
-  <figcaption> <i> Fig R.3 - Rover model parameters and REFINE controller parameters. </i> </figcaption>
+  <figcaption> <i> Fig. R.3 - Rover model parameters and REFINE controller parameters. </i> </figcaption>
 </p>
  </figure>
  
@@ -54,7 +54,7 @@ An example of tracking performance of the proposed controller on the Rover with 
 
 <figure>
 <p align="center">
-  <img height="10000" src="../Image/tracking.png"/>
-  <figcaption> <i> Fig R.4 - An illustration of the tracking performance of the Rover with the proposed controller and identified parameters in Fig R.3. </i> </figcaption>
+  <img height="300" src="../Image/tracking.png"/>
+  <figcaption> <i> Fig. R.4 - An illustration of the tracking performance of the Rover with the proposed controller and identified parameters in Fig. R.3. </i> </figcaption>
 </p>
  </figure>
