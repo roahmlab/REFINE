@@ -20,7 +20,7 @@ An illustration of the direction change maneuvers described by (57), (58), and (
 
 <figure>
 <p align="center">
-  <img height="150" src="../Image/des_dir_change.png"/>
+  <img height="500" src="../Image/des_dir_change.png"/>
    <figcaption> <i> Fig. R.2 -  Examples of $\hdes(t,p)$ and $\rdes(t,p)$ to achieve direction changes with $u_0=1.0$ [m/s], $t_m=1.5$ [s], $h^{\text{des}}_1=\frac{20}{27}$, $h^{\text{des}}_2=\frac{27}{10}$, and $p_y$ taking values of -0.4, 0.4 and 0.8 from top to bottom. Note $p_u$ is set as $u_0$ to maintain the vehicle longitudinal speed before $t_m$ among all 3 examples. </i> </figcaption>
 </p>
  </figure>
@@ -39,7 +39,7 @@ where the subscript "i" can be replaced by either "f" for front tire or "r" for 
 
 <figure>
 <p align="center">
-  <img height="150" src="../Image/slip_ratio.png"/>
+  <img height="250" src="../Image/slip_ratio.png"/>
    <figcaption> <i> Fig. R.3 -  System Identification on longitudinal tire force. A linear model is fit to data collected within the linear regime $[-0.45,0.45]$ of slip ratio. </i> </figcaption>
 </p>
  </figure>
@@ -50,7 +50,7 @@ To identify the parameters related to lateral tire forces, we follow a similar p
 
 <figure>
 <p align="center">
-  <img height="300" src="../Image/slip_angle.png"/>
+  <img height="500" src="../Image/slip_angle.png"/>
   <figcaption> <i> Fig. R.4 - System identification on lateral tire forces. Linear models are fit using data collected within the linear regime $[-0.15,0.15]$ of slip angles. </i> </figcaption>
 </p>
  </figure>
