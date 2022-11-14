@@ -18,7 +18,7 @@ Recall the actual tire models in (6),(7), (10), and (11) become saturated at lar
 where the subscript `i' can be replaced by either `f' for front tire or `r' for rear tire. Using the information from the encoder of driving motor and $u(t)$, slip ratios of both tires can be computed via (5). As shown in the next figure, the longitudinal tire force saturates when the slip ratio becomes bigger than $0.45$.
 
 <p align="center">
-  <img height="300" src="/Image/slip_ratio.pdf"/>
+  <img height="300" src="../Image/slip_ratio.pdf"/>
 </p>
 
 Thus we set $\lambdac=0.45$ and fit $\bar\mu$ from $F_x(t) = mg\bar\mu\lambda_\text{i}(t)$ by performing least squares over collected data that satisfies $|\lambda_\text{i}(t)|\leq\lambdac$ at any time.  
