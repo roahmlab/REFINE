@@ -37,10 +37,9 @@ To identify the parameters related to lateral tire forces, we follow a similar p
 
 Thus we set $\alpha^{\text{cri}}=0.15$, and fit $\bar c_{\alpha\text{f}}$ and $\bar c_{\alpha\text{r}}$ in (13) by performing least squares over collected data that satisfies $|\alpha_\text{i}(t)|\leq\alpha^{\text{cri}}$ at any time.   
 
-## 3. Model Parameters 
+## 3. Model Parameters
 
 Results of system identification are summarized in Fig. R.3 together with controller gains that are chosen to satisfy the conditions in Lemma 14.
-An example of tracking performance of the proposed controller on the Rover with identified parameters is shown in Fig. R.4.
 
 <figure>
 <p align="center">
@@ -49,7 +48,13 @@ An example of tracking performance of the proposed controller on the Rover with 
 </p>
  </figure>
  
- 
-
 ## Controller Performance
 
+An example of tracking performance of the proposed controller on the Rover with identified parameters is shown in Fig. R.4.
+
+<figure>
+<p align="center">
+  <img height="300" src="../Image/tracking.png"/>
+  <figcaption> <i> Fig R.4 - An illustration of the tracking performance of the Rover with the proposed controller and identified parameters in Fig R.3. </i> </figcaption>
+</p>
+ </figure>
