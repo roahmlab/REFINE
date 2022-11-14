@@ -21,7 +21,7 @@ where the subscript "i" can be replaced by either "f" for front tire or "r" for 
   <img height="300" src="../Image/slip_ratio.png"/>
 </p>
 
-Thus we set $\lambdac=0.45$ and fit $\bar\mu$ from $F_x(t) = mg\bar\mu\lambda_\text{i}(t)$ by performing least squares over collected data that satisfies $|\lambda_\text{i}(t)|\leq\lambdac$ at any time.  
+Thus we set $\lambda^{\text{cri}}=0.45$ and fit $\bar\mu$ from $F_x(t) = mg\bar\mu\lambda_\text{i}(t)$ by performing least squares over collected data that satisfies $|\lambda_\text{i}(t)|\leq\lambda^{\text{cri}}$ at any time.  
 
 ## 3. Model Parameters 
 
