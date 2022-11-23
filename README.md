@@ -9,20 +9,23 @@ Real-time trajectory planning is achieved by solving an optimization framework i
   <img height="300" src="/Image/overview.png"/>
 </p>
 
+<!--
 # Installation Requirements
 REFINE is built on Ubuntu 20.04 with ROS Noetic Distribution, and the algorithms are implemented in MATLAB and C++17. 
 REFINE has the following required dependencies:
 - [Docker](https://www.docker.com/) to download simulation package.
 - [CORA 2018](https://tumcps.github.io/CORA/) for Forward Reachable Sets representation and computation.
+-->
 
 # Overview
 ## 0. Installation
-- Run dockerfile (need to modify this line once Lucas uploads the file).
-- Lunch docker (need to modify this line once Lucas uploads the file).
-- Run MATLAB inside docker (need to modify this line once Lucas uploads the file).
-- Add required toolboxes in the search path of MATLAB.
+REFINE is built on Ubuntu 20.04 with ROS Noetic Distribution, and the algorithms are implemented in MATLAB 2022a and C++17. 
+- Clone the git repos and CORA by running the following from the top-level:
+```bash
+./download-dependencies.sh
+```
 - Run [`install.m`](https://github.com/jinsunl/REFINE/blob/main/install.m).
-- In [`split.m`](https://github.com/jinsunl/REFINE/blob/main/split.m), replace line 20 with ```cd(your_matlab_directory/toolbox/matlab/strfun)``` and line 22 with ```cd('your_CORA2018_directory/global functions/globOptimization')``` (need to modify this line once Lucas uploads the file).
+- In [`split.m`](https://github.com/jinsunl/REFINE/blob/main/split.m), replace line 20 with ```cd(your_matlab_directory/toolbox/matlab/strfun)``` and line 22 with ```cd('your_CORA2018_directory/global functions/globOptimization')```.
 
 
 ## 1. Offline reachability analysis
