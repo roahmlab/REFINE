@@ -5,11 +5,13 @@
 * Download the following into the top-level `util` directory:
   * `coinhsl-2021.05.05.tar.gz` from [here](https://www.hsl.rl.ac.uk/ipopt/) (ACADEMIC LICENCE)
   * `lane_change_Ay_info.mat`, `dir_change_Ay_info.mat`, `car_frs.mat`, `car_frs.txt` from the data folder [here](https://drive.google.com/drive/folders/1WZbFFhCyhYQlMJxuV4caIzNoa-Q9VZkW?usp=share_link)
+<!--
   * Clone the git repos and CORA by running the following from the top-level:
 ```bash
 cd util
 ./download-dependencies.sh
 ```
+-->
 
 ## Running the Simulation
 * In this directory, run `./build-docker.sh`
