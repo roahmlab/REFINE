@@ -108,10 +108,10 @@ classdef JL_highwayAgentHelper < agentHelper
             o.UseParallel = false;
             %             o.Algorithm = 'trust-region-reflective';
             AH.fminconopt = o;
-            AH.plot_ax = figure(3);
-            subplot(3,1,1);cla; hold on; axis equal;
-            subplot(3,1,2);cla; hold on; axis equal;
-            subplot(3,1,3);cla; hold on; axis equal;
+%             AH.plot_ax = figure(3);
+%             subplot(3,1,1);cla; hold on; axis equal;
+%             subplot(3,1,2);cla; hold on; axis equal;
+%             subplot(3,1,3);cla; hold on; axis equal;
             
             %             figure(1);subplot(4,4,[3,7,11,15])
             %             For ford only
@@ -211,6 +211,7 @@ classdef JL_highwayAgentHelper < agentHelper
                 AH.time_hist = [AH.time_hist AH.A.time(end)];
             end
             tout = 0;
+%             K
             return
             
             %     AH.cur_t0_idx = 1;

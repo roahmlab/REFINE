@@ -3,5 +3,11 @@
 *.mat
 *.mp4
 dyn*
-
-
+*.zip
+*.tar.gz
+*.txt
+/util/CORA_2018
+/util/RTD
+/util/RTD_tutorial
+/util/simulator
+/util/zono_RTD_turtlebot_example

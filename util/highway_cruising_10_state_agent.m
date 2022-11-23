@@ -1,11 +1,9 @@
 classdef highway_cruising_10_state_agent < RTD_agent_2D
-    % Agent of full-size vehicle model with closed loop dynamics
+    % Agent of full-size vehicle model with closed loop dynamics using the
+    % controller proposed by REFINE. NOTE the vehicle agent is assumed to
+    % be FWD in this script. 
     
     properties
-        % state limits
-        max_speed = 5; % m/s
-        min_spd = 0.5;
-        speed_index = 4;
         
         wheel_plot_data = {};
         wheel_color  = [255 255 255]/255;
@@ -54,10 +52,6 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
         max_Fy_uncertainty
         max_Fx_uncertainty
         max_Fx_uncertainty_braking
-        
-        use_rover_controller = 0; %set this to 1 if you do not wish to use FL. set to 0 if you use FL
-        rover_LLC; % rover's low level controller if needed for hardware development
-        
     end
     
     methods
@@ -115,9 +109,6 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
             A.Cus = m * grav_const * (lr / (A.l * Caf1) - lf / (A.l * Car1));
             A.u_cri = u_really_slow;
             
-            if A.use_rover_controller
-                A.rover_LLC = highway_rover_LLC();
-            end
             
         end
         
@@ -232,28 +223,25 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
             tau_r = -(kappa*A.Mr + phi) *err_term;
             vf = v + A.lf*r;
             vr = v - A.lr*r;
-            alphar = atan( vr / max(u, A.u_cri*1.1)); % modify denominator for numerical stability
-            Fywr = -A.Car1*tanh(A.Car2*alphar);
+            alphar = - vr / max(u, A.u_cri*1.1); % modify denominator for numerical stability
+            Fywr = A.Car1*alphar;
             desired_front_lat_force = (A.Izz*(r_dot_des + tau_r) + A.lr*Fywr)/A.lf;
             delta = desired_front_lat_force/A.Caf1 + vf/u;
 
             
 
-            % longitudina force computation for wheel speed w_cmd
-            uv_wf = rotmat(-delta)*[u;vf];
-            alphaf = atan( uv_wf(2) ./ (uv_wf(1) + sign(uv_wf(1)+0.001)*0.01)); % modify denominator for numerical stability
-            Fywf = -A.Caf1*tanh(A.Caf2*alphaf);            
+            % longitudina force computation for wheel speed w_cmd      
             kappaU = A.kappaPU + A.kappaIU*(u_err_sum);
             phiU = A.phiPU + A.phiIU*(u_err_sum);
             u_err = u - ud;
             err_term = A.Ku*u_err;
             tau_u = -(kappaU*A.Mu + phiU) * err_term;
-            desired_lon_force = ((u_dot_des + tau_u - v*r)*A.m + sin(delta)*Fywf);
+            desired_lon_force = (u_dot_des + tau_u - v*r)*A.m;
             Cbf = A.m * A.grav_const * A.lr / A.l * A.mu_bar;
             if uddot <= 0 
-                w_cmd = (desired_lon_force/Cbf *  uv_wf(1) + uv_wf(1)) / A.rw;
+                w_cmd = (desired_lon_force/Cbf * u + u) / A.rw;
             else
-                w_cmd = uv_wf(1)/A.rw/(1-desired_lon_force/Cbf);
+                w_cmd = u/A.rw/(1-desired_lon_force/Cbf);
             end
         end
         function [delta, w_cmd, vlo, rlo] = Low_Spd_LLC(A,t,z,T,U,Z)
@@ -269,23 +257,19 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
             rlo = delta*u/(A.l+A.Cus*u^2/A.grav_const);
             vlo = rlo*(A.lr - u^2*mr/A.Car1);
             
-            u_dot_des = A.Ku*(ud -u) + uddot;
-            vf = vlo + A.lf*rlo; 
-            uv_wf = rotmat(-delta)*[u;vf];
-            alphaf = atan( uv_wf(2) ./ (uv_wf(1) + sign(uv_wf(1)+0.001)*0.01)); % modify denominator for numerical stability
-            Fywf = -A.Caf1*tanh(A.Caf2*alphaf);            
+            u_dot_des = A.Ku*(ud -u) + uddot;   
             kappaU = A.kappaPU + A.kappaIU*(u_err_sum);
             phiU = A.phiPU + A.phiIU*(u_err_sum);
             u_err = u - ud;
             err_term = A.Ku*u_err;
             Mu_lo = A.max_Fx_uncertainty_braking / A.m;
             tau_u = -(kappaU*Mu_lo + phiU) * err_term;
-            desired_lon_force = ((u_dot_des + tau_u - vlo*rlo)*A.m + sin(delta)*Fywf);
+            desired_lon_force = (u_dot_des + tau_u - vlo*rlo)*A.m;
             Cbf = A.m * A.grav_const * A.lr / A.l * A.mu_bar;
             if uddot <= 0 
-                w_cmd = (desired_lon_force/Cbf *  uv_wf(1) + uv_wf(1)) / A.rw;
+                w_cmd = (desired_lon_force/Cbf *  u+ u) / A.rw;
             else
-                w_cmd = uv_wf(1)/A.rw/(1-desired_lon_force/Cbf);
+                w_cmd = u/A.rw/(1-desired_lon_force/Cbf);
             end
             
         end

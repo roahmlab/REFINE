@@ -26,7 +26,7 @@ for t0_idx = 1
     options.tStart = 0;
     options.x0 = zeros(dim,1);
     
-    for u0 = u0_vec(21:end) % u0 = u0_vec(1) causes splitting, so start from u0_vec(2)
+    for u0 = u0_vec(2:end) % u0 = u0_vec(1) causes splitting, so start from u0_vec(2)
         [~,u0_idx ]=min(abs(u0_vec -u0));
         del_y_arr = linspace(0,Ay_vec(u0_idx),2*num_Ay+1);
         delpy = del_y_arr(2) - del_y_arr(1);

@@ -26,7 +26,7 @@ for t0_idx = 1:length(t0_arr)
     options.tStart = 0;
     options.x0 = zeros(dim,1);
     
-    for u0 = u0_vec(42:end) % u0 = u0_vec(1) causes splitting, so start from u0_vec(2)
+    for u0 = u0_vec(2:end) % u0 = u0_vec(1) causes splitting, so start from u0_vec(2)
         [~,u0_idx ]=min(abs(u0_vec -u0));
         for Au_idx = 2:length(u0_vec)
             if abs(Au_idx -u0_idx) > 20 % avoid dramatic change in speed

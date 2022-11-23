@@ -41,11 +41,11 @@ else
 end
 r_value_vec = zeros(2,end_idx,num_Ay,length(u0_vec)); %value of r at different time stage of a turn
 v_value_vec = zeros(2,end_idx,num_Ay,length(u0_vec)); %value of v at different time stage of a turn
-for u0idx = 21:length(u0_vec)
+for u0idx = 1:length(u0_vec)
     u0 = u0_vec(u0idx) % initial longitudinal speed
     w0 = u0; % initial wheel speed.
     %% Test system behavior over each maneuver via simulaion
-    A_go = highway_cruising_10_state_agent('use_rover_controller',false) ;
+    A_go = highway_cruising_10_state_agent;
     
     z_0 = [x0;y0;h0;u0;v0;r0;w0;0;0;0] ;
     done_flag = 0;
