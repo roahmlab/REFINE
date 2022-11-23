@@ -1,8 +1,8 @@
 % close all, clc
 method = 0; % 0: flzono, 1: gpops
-addpath(genpath('/installs/cpp-opt'))
-addpath(genpath('/data'))
-addpath(genpath('/simulator'))
+% addpath(genpath('/installs/cpp-opt'))
+% addpath(genpath('/data'))
+% addpath(genpath('/simulator'))
 if method == 0 % flzono
 %     frs_filename = 'FRS_Rover_22-Jan-2022_no_force.mat' ;
     frs_filename = 'car_frs.mat';
@@ -104,7 +104,7 @@ S.eval = 1; %turn on evaluation so summary will be saved
 % AH.planned_path(2,1:175) = -38;
 hlp_lookahead = 90;
 % fail_iters = [6 13 22 23 25 28 29 30 35 44 48 50 52 53 56 58 70 72 74 76 77 78 80 85 93 95 96];
-for j = 1:1000 % fail_iters
+for j = 171:1000 % fail_iters
 
     %% REAL RESET
     W = dynamic_car_world('JL_case_construction', 1, 'bounds', bounds, ...

@@ -5,7 +5,7 @@
 
 clear, close all; clear
 full_size_const; 
-save my_const.mat
+save '../util/my_const.mat'
 warning('off','ALL')
 
 

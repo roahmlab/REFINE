@@ -1,7 +1,0 @@
-what JL changes?
-1. vehivle.m line 360: remove virtual bumper
-2. sosPlannerHelper.m line 219~223: adaptive for no obstacle
-4. save FRS file. To visualize: 
-    >>for i = 1:length(FRS_vis.FRS)
-    >>    plot(FRS_vis.FRS{i}{1}(2,:),FRS_vis.FRS{i}{1}(1,:))
-    >>end
