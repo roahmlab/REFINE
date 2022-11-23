@@ -75,9 +75,9 @@ for i=1:length(files)
     dy2 = c2(2);
     dh2 = c2(3);
     
-    idx1 = strfind(files(i).name,'_u=');
-    idx2 = strfind(files(i).name,'_A');
-    u0 = str2double(files(i).name(idx1+3:idx2-1));
+    idx1 = strfind(files(i).name,'_u0=');
+    idx2 = strfind(files(i).name,'_p');
+    u0 = str2double(files(i).name(idx1+4:idx2-1));
     
     mega_idx = find(abs(u0_vec - u0)<0.01);
     M = M_mega{mega_idx};
@@ -98,7 +98,7 @@ for i=1:length(files)
         idx1 = strfind(files(i).name,'_p_y=');
         idx2 = strfind(files(i).name,',');
         idx3 = strfind(files(i).name,'.mat');
-        Ay_idx = str2double(files(i).name(idx1+4:idx2-1));
+        Ay_idx = str2double(files(i).name(idx1+5:idx2-1));
         Ay     = str2double(files(i).name(idx2+1:idx3-1));
         idxt1 = strfind(files(i).name,'t0=');
         idxt2 = strfind(files(i).name,'_u0=');
@@ -129,7 +129,7 @@ for i=1:length(files)
     elseif contains(files(i).name,'spd_change')
         idx1 = strfind(files(i).name,'_p_u=');
         idx2 = strfind(files(i).name,',');
-        Au = str2double(files(i).name(idx1+4:idx2-1));
+        Au = str2double(files(i).name(idx1+5:idx2-1));
         r0v0_spd_limits = [dir_info.v0_limit_c(1,1,mega_idx)-dir_info.v0_limit_gen(1,1,mega_idx);
                            dir_info.v0_limit_c(1,1,mega_idx)+dir_info.v0_limit_gen(1,1,mega_idx);
                            dir_info.r0_limit_c(1,1,mega_idx)-dir_info.r0_limit_gen(1,1,mega_idx);

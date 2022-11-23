@@ -247,7 +247,7 @@ for t0_idx = 1:length(t0_arr)
                 end
             end
             
-            save("./FRSdata/spd_change_t0="+num2str(t0)+"_u="+num2str(u0)+"_p_u="+num2str(Au_idx)+","+num2str(p_u)+".mat",'vehRS_save','brake_idx1','brake_idx2');
+            save("./FRSdata/spd_change_t0="+num2str(t0)+"_u0="+num2str(u0)+"_p_u="+num2str(Au_idx)+","+num2str(p_u)+".mat",'vehRS_save','brake_idx1','brake_idx2');
         end
     end
 end
