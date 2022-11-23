@@ -240,10 +240,10 @@ for t0_idx = 1:length(t0_arr)
                 range_z = supremum(intz) - infimum(intz);
                 
                 if all(range_z./range_ori <= 1.1)
-                   vehRS_save{end+1} = deleteAligned(deleteZeros(z),slice_dim);
+                   vehRS_save{end+1} = deleteAligned_noslice(deleteZeros(z),slice_dim);
                    cnt = cnt + 2;
                 else
-                    vehRS_save{end+1} = deleteAligned(deleteZeros(z1),slice_dim);
+                    vehRS_save{end+1} = deleteAligned_noslice(deleteZeros(z1),slice_dim);
                     cnt = cnt + 1;
                 end
             end
