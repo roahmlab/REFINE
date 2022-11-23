@@ -124,32 +124,36 @@ std::vector<FrsSelectInfo> GetParamsToSearchOver(const FrsTotal& frs,
     }
   }
 
-  const auto& mega_u = frs.megas_.at(u0_idx);
-  auto add_dir_lan_frs = [&mega_u, &add_frs,
-                          &u0_idx, &frses_to_search](const ManuType manu_type) {
-    const auto& manu_set = mega_u.GetDirLanSet(manu_type);
-    const bool is_table_populated = mega_u.IsTablePopulated(manu_type);
-    const int manu_set_size = static_cast<int>(manu_set.size());
-    for (int i = 0; i < manu_set_size; ++i) {
-      const int num_search =
-          static_cast<int>(manu_set.at(i).size());  // TODO Remove Min
-      // const int num_search = std::min(
-      //    1, static_cast<int>(manu_set.at(i).size()));  // TODO Remove Min
-      add_frs(0, num_search, is_table_populated, mega_u, manu_type, u0_idx,
-              false, i, true);
-      std::cout << "Adding D/LAN CHANGE [TOTAL SIZE: " << frses_to_search.size() << "]" << std::endl;
+  // Don't look at direction or lane changes if they are outside the linear 
+  // regime (<= 7.0m/s)
+  if (frs.u0_intervals_.at(u0_idx).Max() > 7.0) {
+    const auto& mega_u = frs.megas_.at(u0_idx);
+    auto add_dir_lan_frs = [&mega_u, &add_frs,
+                            &u0_idx, &frses_to_search](const ManuType manu_type) {
+      const auto& manu_set = mega_u.GetDirLanSet(manu_type);
+      const bool is_table_populated = mega_u.IsTablePopulated(manu_type);
+      const int manu_set_size = static_cast<int>(manu_set.size());
+      for (int i = 0; i < manu_set_size; ++i) {
+        const int num_search =
+            static_cast<int>(manu_set.at(i).size());  // TODO Remove Min
+        // const int num_search = std::min(
+        //    1, static_cast<int>(manu_set.at(i).size()));  // TODO Remove Min
+        add_frs(0, num_search, is_table_populated, mega_u, manu_type, u0_idx,
+                false, i, true);
+        std::cout << "Adding D/LAN CHANGE [TOTAL SIZE: " << frses_to_search.size() << "]" << std::endl;
+      }
+    };
+    if (search_lan) {
+      //DEL TODO REMOVE ROS_INFO("SEARCH LAN");
+      //DEL std::cout << "SEARCH LAN" << std::endl;
+      add_dir_lan_frs(ManuType::kLanChange);
     }
-  };
-  if (search_lan) {
-    //DEL TODO REMOVE ROS_INFO("SEARCH LAN");
-    //DEL std::cout << "SEARCH LAN" << std::endl;
-    add_dir_lan_frs(ManuType::kLanChange);
-  }
 
-  if (search_dir) {
-    //DEL TODO REMOVE ROS_INFO_STREAM("SEARCH DIR");
-    //DEL std::cout << "SEARCH DIR" << std::endl;
-    add_dir_lan_frs(ManuType::kDirChange);
+    if (search_dir) {
+      //DEL TODO REMOVE ROS_INFO_STREAM("SEARCH DIR");
+      //DEL std::cout << "SEARCH DIR" << std::endl;
+      add_dir_lan_frs(ManuType::kDirChange);
+    }
   }
 
   return frses_to_search;
