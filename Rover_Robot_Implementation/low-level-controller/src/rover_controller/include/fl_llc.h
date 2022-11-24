@@ -65,10 +65,10 @@ RoverCmd FeedbackLinControllerNew(ComplexHeadingState& state, double w_cmd_prev,
   const double c_fric_1 = 8.0897;
   const double c_fric_2 = 10.5921;
   const double kt = 0.4642;
-  const double cbar_alpha_f = 24.03;
-  const double cbar_alpha_r = 43.71;
+  const double cbar_alpha_f = 30.03;
+  const double cbar_alpha_r = 70.71;
   const double u_cri = RtdConsts::kUReallySlow;
-  const double mu_bar = 0.95;
+  const double mu_bar = 0.7748;
   const double l_f = 0.203;
   const double l_r = 0.107;
   const double l = 0.31;
@@ -79,7 +79,7 @@ RoverCmd FeedbackLinControllerNew(ComplexHeadingState& state, double w_cmd_prev,
   const double k_r = 5.0;
   const double k_u = 4.0;
   const double m_r = 4.86364;
-  const double m_u = 0.3;
+  const double m_u = 1.11;
   const double c_us = (m / l) * ((l_r / cbar_alpha_f) - (l_f / cbar_alpha_r));
   const double r_w = 0.05461;
   const double kappa_1_u = 1.2;
