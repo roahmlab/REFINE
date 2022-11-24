@@ -7,21 +7,21 @@ We summarize several components of the rover experiment here for interested read
 
 ## 1. Desired Trajectories 
 
-An illustration of the speed change maneuvers described by (57), (58), and (60) can be found in Fig R.1.
+An illustration of the speed change maneuvers described by (57), (58), and (60) can be found in Fig R.1 with $u_0=1.0$ $[\text{m}/\text{s}]$, $u^{\text{cri}}=0.5$ $[\text{m}/\text{s}]$, $t_m=1.5$ $[\text{s}]$, and $a^{\text{dec}}=-1.5$ $[\text{m}/\text{s}^2]$.
 
 <figure>
 <p align="center">
   <img height="500" src="../Image/udes.png"/>
-   <figcaption> <i> Fig. R.1 -  Examples of $u^{\text{des}}(t,p)$ with $u_0=1.0$ [m/s], $u^{\text{cri}}=0.5$ [m/s], $t_m=1.5$ [s], $a^{\text{dec}}=-1.5$ [m/s${}^2$], and $p_u$ taking values of 0.6, 1.2 and 2.0 from top to bottom. Note zero lateral control is commanded in all 3 examples. </i> </figcaption>
+   <figcaption> <i> Fig. R.1 -  Examples of speed change maneuvers. Note zero lateral control is commanded in all 3 examples. </i> </figcaption>
 </p>
  </figure>
 
-An illustration of the direction change maneuvers described by (57), (58), and (61) can be found in Fig R.2. 
+An illustration of the direction change maneuvers described by (57), (58), and (61) can be found in Fig R.2 with $u_0=1.0$ $[\text{m}/\text{s}]$, $t_m=1.5$ $[\text{s}]$, $h^{\text{des}}_1=\frac{20}{27}$, $h^{\text{des}}_2=\frac{27}{10}$ and $p_u=u_0$. 
 
 <figure>
 <p align="center">
   <img height="500" src="../Image/des_dir_change.png"/>
-   <figcaption> <i> Fig. R.2 -  Examples of $\hdes(t,p)$ and $\rdes(t,p)$ to achieve direction changes with $u_0=1.0$ [m/s], $t_m=1.5$ [s], $h^{\text{des}}_1=\frac{20}{27}$, $h^{\text{des}}_2=\frac{27}{10}$, and $p_y$ taking values of -0.4, 0.4 and 0.8 from top to bottom. Note $p_u$ is set as $u_0$ to maintain the vehicle longitudinal speed before $t_m$ among all 3 examples. </i> </figcaption>
+   <figcaption> <i> Fig. R.2 -  Examples of direction change maneuvers. </i> </figcaption>
 </p>
  </figure>
 
@@ -40,7 +40,7 @@ where the subscript "i" can be replaced by either "f" for front tire or "r" for 
 <figure>
 <p align="center">
   <img height="250" src="../Image/slip_ratio.png"/>
-   <figcaption> <i> Fig. R.3 -  System Identification on longitudinal tire force. A linear model is fit to data collected within the linear regime $[-0.45,0.45]$ of slip ratio. </i> </figcaption>
+   <figcaption> <i> Fig. R.3 -  System Identification on longitudinal tire force. A linear model is fit to data collected within the linear regime [-0.45,0.45] of slip ratio. </i> </figcaption>
 </p>
  </figure>
 
@@ -51,7 +51,7 @@ To identify the parameters related to lateral tire forces, we follow a similar p
 <figure>
 <p align="center">
   <img height="500" src="../Image/slip_angle.png"/>
-  <figcaption> <i> Fig. R.4 - System identification on lateral tire forces. Linear models are fit using data collected within the linear regime $[-0.15,0.15]$ of slip angles. </i> </figcaption>
+  <figcaption> <i> Fig. R.4 - System identification on lateral tire forces. Linear models are fit using data collected within the linear regime [-0.15,0.15] of slip angles. </i> </figcaption>
 </p>
  </figure>
 
