@@ -19,7 +19,7 @@ cd util
 * Run `./run-docker.sh`.
 * Run `./run-matlab.sh` in the docker. MATLAB needs to be activated at the first time when it runs in the docker. In case when MATLAB requires for an account verification but fails to automatically open a browser, try to log in your account and verify the account [online](https://matlab.mathworks.com/).
 * Open another terminal, and get the 'CONTAINER ID' using `docker ps`. Run `docker exec -it replace_with_your_CONTAINER_ID /bin/bash` to enter the same running docker image, and run `./build-cpp-opt.sh` to build the necessary MEX file.
-* In the MATLAB invoked by `./run-matlab.sh`, run 'highway_simulation'.
+* In the MATLAB invoked by `./run-matlab.sh`, run [highway_simulation.m](https://github.com/roahmlab/REFINE/blob/main/Full_Size_Vehicle_Simulation/simulator/highway_simulation.m).
 
 <!--
 * In the docker:
