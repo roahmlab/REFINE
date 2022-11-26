@@ -1,7 +1,6 @@
 # REFINE
-The low level controller is located in `low-level-controller/src/rover_controller/include/fl_llc.h`
-
-The online parameter generation is located in `online-parameter-generation/src/rover_controller/src/param_gen.cc`
+Low level controller is located in [fl_llc.h](https://github.com/roahmlab/REFINE/blob/main/Rover_Robot_Implementation/low-level-controller/src/rover_controller/include/fl_llc.h),   <!--`low-level-controller/src/rover_controller/include/fl_llc.h`-->
+and online parameter generation is located in [param_gen.cc](https://github.com/roahmlab/REFINE/blob/main/Rover_Robot_Implementation/online-parameter-generation/src/rover_controller/src/param_gen.cc).     <!--`online-parameter-generation/src/rover_controller/src/param_gen.cc`-->
 
 We summarize several components of the rover experiment here for interested readers. Note references to equations correspond to equation numbers from the paper.
 
