@@ -65,8 +65,8 @@ RoverCmd FeedbackLinControllerNew(ComplexHeadingState& state, double w_cmd_prev,
   const double c_fric_1 = 8.0897;
   const double c_fric_2 = 10.5921;
   const double kt = 0.4642;
-  const double cbar_alpha_f = 30.03;
-  const double cbar_alpha_r = 70.71;
+  const double cbar_alpha_f = 36.24;
+  const double cbar_alpha_r = 63.52;
   const double u_cri = RtdConsts::kUReallySlow;
   const double mu_bar = 0.7748;
   const double l_f = 0.203;
@@ -75,10 +75,10 @@ RoverCmd FeedbackLinControllerNew(ComplexHeadingState& state, double w_cmd_prev,
   const double g = 9.8;
   const double m = 4.956;
   const double i_zz = 0.11;
-  const double k_h = 8.0;
-  const double k_r = 5.0;
+  const double k_h = 5.0;
+  const double k_r = 8.0;
   const double k_u = 4.0;
-  const double m_r = 4.86364;
+  const double m_r = 1.03;
   const double m_u = 1.11;
   const double c_us = (m / l) * ((l_r / cbar_alpha_f) - (l_f / cbar_alpha_r));
   const double r_w = 0.05461;
@@ -86,10 +86,10 @@ RoverCmd FeedbackLinControllerNew(ComplexHeadingState& state, double w_cmd_prev,
   const double kappa_2_u = 0.8;
   const double phi_1_u = 1.2;
   const double phi_2_u = 0.8;
-  const double kappa_1_r = 0.4;
-  const double kappa_2_r = 0.9;
-  const double phi_1_r = 0.4;
-  const double phi_2_r = 0.9;
+  const double kappa_1_r = 0.9;
+  const double kappa_2_r = 0.6;
+  const double phi_1_r = 0.9;
+  const double phi_2_r = 0.6;
 
   //
   // Load state variables
@@ -188,15 +188,6 @@ RoverCmd FeedbackLinControllerNew(ComplexHeadingState& state, double w_cmd_prev,
   const double numerator2 = fric + (numerator1 / l);
   w_cmd = numerator2 / kt;
 
-  // TODO keep?
-  if (u < 0.05) {
-    delta = 0;
-  }
-
-  // TODO why?
-  if (ud == 0.0) {
-    w_cmd = -1.0;
-  }
 
   RoverCmd ret_val;
   ret_val.w_ = w_cmd;

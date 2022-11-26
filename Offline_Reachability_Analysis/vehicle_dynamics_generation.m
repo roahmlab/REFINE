@@ -42,7 +42,7 @@ matlabFunction(ddyn, 'File', 'dyn_u_slow', 'vars', {tdummy dyn udummy});
 %% Lane Change
 p_u = u0;
 not_speed_change = 1;
-[T,U,Z] = gaussian_T_parameterized_traj_with_brake(t0, p_y,p_u,u0,t,syms_flag,not_speed_change, brake_time);
+[T,U,Z] = gaussian_T_parameterized_traj_with_brake(t0, p_y,p_u,u0,t,syms_flag,not_speed_change, brake_time, isSim);
 
 % driving maneuver
 ud = U(1,1);
@@ -111,7 +111,12 @@ function dx = gen_low_speed(u,ud,h, rd,t,err_u_sum)
     rlo = delta*u/(l+Cus*u^2/grav_const);     
     vlo = rlo*(lr - u^2*mr/Car1);
     
-    Mu_lo = max_Fx_uncertainty_braking / m;
+    if isSim
+        Mu_lo = max_Fx_uncertainty_braking / m;
+    else
+        Mu_lo = b_u_pro*u+b_u_off;
+    end
+
     kappaU = kappaPU + kappaIU*(err_u_sum);
     phiU = phiPU + phiIU*(err_u_sum);
     u_err = u - ud;
@@ -119,8 +124,12 @@ function dx = gen_low_speed(u,ud,h, rd,t,err_u_sum)
     tau_u = -(kappaU*Mu_lo + phiU) * err_term;
 
     Fxf = - m*vlo*rlo/2 - m/2*Ku*(u-ud) + m/2*diff(ud,t);
-    dudt = 1/m*(2*(Fxf)+m*vlo*rlo) + max_Fx_uncertainty_braking/m + tau_u;
-                                                            
+    if isSim
+        dudt = 1/m*(2*(Fxf)+m*vlo*rlo) + Mu_lo + tau_u;
+    else
+        dudt = 1/m*(2*(Fxf)+m*vlo*rlo) + tau_u + (9.8095)*u+(-41.129)*u^2+(60.344)*u^3 ; % (9.8095)*u+(-41.129)*u^2+(60.344)*u^3  is an over approximation of delta_u based on REFINE-Fig.7
+    end
+
     dx = [  u .* cos( h ) - vlo .* sin( h ); u .* sin( h ) + vlo .* cos( h );  rlo; dudt; 0; 0; zeros(9,1);0; 0; 0;0; 1 ];%h_state does not exist
 
     

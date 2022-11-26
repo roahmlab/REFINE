@@ -15,7 +15,7 @@ for t0_idx = 1:length(t0_arr)
     options.taylorTerms=15; % number of taylor terms for reachable sets
     options.zonotopeOrder= 100; % zonotope order... increase this for more complicated systems.
     options.maxError = 1e100*ones(dim, 1); 
-    options.verbose = 0;
+    options.verbose = 1;
     options.uTrans = 0; % we won't be using any inputs
     options.U = zonotope([0, 0]);
     options.advancedLinErrorComp = 0;
@@ -26,15 +26,28 @@ for t0_idx = 1:length(t0_arr)
     options.tStart = 0;
     options.x0 = zeros(dim,1);
     
-    for u0 = u0_vec(2:end) % u0 = u0_vec(1) causes splitting, so start from u0_vec(2)
+    for u0 = u0_vec(1:end)
+        if isSim && u0 == u0_vec(1) % u0 = u0_vec(1) causes splitting, so start from u0_vec(2)
+            continue
+        elseif ~isSim && u0 < u0_vec(3) % avoid splitting
+            continue
+        end
+
         [~,u0_idx ]=min(abs(u0_vec -u0));
-        for Au_idx = 2:length(u0_vec)
-            if abs(Au_idx -u0_idx) > 20 % avoid dramatic change in speed
+        for Au_idx = 1:length(u0_vec)
+            %% phase 1: driving maneuver - speed change
+            if isSim && abs(Au_idx -u0_idx) > 20 % avoid dramatic change in speed
                 continue;
             end
+            if isSim && Au_idx == 1 % avoid splitting
+                continue
+            elseif ~isSim && Au_idx < 3 % avoid splitting
+                continue
+            end
+
             del_y_idx = 1; 
             p_u = u0_vec(Au_idx);
-            u0,p_u 
+            [u0,p_u] 
             options.x0 = zeros(dim,1);
             options.tFinal = tm-t0;
             options.timeStep = 0.01;
@@ -49,9 +62,15 @@ for t0_idx = 1:length(t0_arr)
             options.x0(12) = 0;
             options.x0(14) = 0;
             
-            delx0 = zeros(dim,1); delx0(1) = 0.2;
-            dely0 = zeros(dim,1); dely0(2) = 0.1;
-            delh0 = zeros(dim,1); delh0(3) = deg2rad(3.14);
+            if isSim
+                delx0 = zeros(dim,1); delx0(1) = 0.2;
+                dely0 = zeros(dim,1); dely0(2) = 0.1;
+                delh0 = zeros(dim,1); delh0(3) = deg2rad(3.14);
+            else
+                delx0 = zeros(dim,1); delx0(1) = 0.046;
+                dely0 = zeros(dim,1); dely0(2) = 0.062;
+                delh0 = zeros(dim,1); delh0(3) = deg2rad(1.93);
+            end
             delu0 = zeros(dim,1); delu0(4) = u0_gen; delu0(7) = u0_gen; 
             delAu = zeros(dim,1); delAu(11) = u0_gen;
             delv0 = zeros(dim,1); delv0(5) = v0_limit_gen(t0_idx,del_y_idx,u0_idx); delv0(8) = v0_limit_gen(t0_idx,del_y_idx,u0_idx);
@@ -96,6 +115,7 @@ for t0_idx = 1:length(t0_arr)
             g1(15) = max_Fx_uncertainty_braking;
             GR0 = [g1 GR0];
             options.R0 = zonotope([options.x0, GR0]);
+            
             
             options.tFinal = (u_scale(2) - u_really_slow )/amax+0.01; % make sure to trigger and pass the guard
             sys = nonlinearSys(dim, 1, @dyn_u_brake, options);
@@ -156,7 +176,7 @@ for t0_idx = 1:length(t0_arr)
             options.timeStep = dt;
             options.R0 = vehBrk_aux{1}{1};
             options.x0 = center(options.R0);
-            options.tFinal = 1;
+            options.tFinal = 1 + (1-isSim);
             sys = nonlinearSys(dim, 1, @dyn_u_slow, options);
             [vehBrk_low,Rt_brk_low] = reach(sys, options);
             fprintf('low-speed contingency braking finished\n')
@@ -184,14 +204,14 @@ for t0_idx = 1:length(t0_arr)
                     brake_idx2 = length(vehRS_save) + 1;
                 end
 
-                temp{cnt}{1} = linear_regime_verification(temp{cnt}{1},'Au'); % we use tag 'Au' to indicate speed change maneuver
+                temp{cnt}{1} = linear_regime_verification(temp{cnt}{1},'Au',isSim); % we use tag 'Au' to indicate speed change maneuver
                 z1 = temp{cnt}{1};
                 if cnt == length(temp)
-                    vehRS_save{end+1} = deleteAligned(deleteZeros(z1),slice_dim);
+                    vehRS_save{end+1} = deleteAligned_noslice(deleteZeros(z1),slice_dim);
                     break
                 end
                 
-                temp{cnt+1}{1} = linear_regime_verification(temp{cnt+1}{1},'Au');
+                temp{cnt+1}{1} = linear_regime_verification(temp{cnt+1}{1},'Au',isSim);
                 z2 = temp{cnt+1}{1};
                 int1 = interval(z1); int1 = int1(1:2);
                 int2 = interval(z2); int2 = int2(1:2);

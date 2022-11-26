@@ -1,7 +1,7 @@
 function [T U Z] = sin_one_hump_parameterized_traj_with_brake(t0,del_y,p_u,u0,t,symbolic_flag, not_speed_change,brake_time)
 % this function provides desired trajectory for a speed or direction change maneuver
 load my_const.mat
-if(not_speed_change)
+if not_speed_change
      p_y = del_y;
 else
      p_y = 0; 
@@ -38,7 +38,7 @@ else
     t3 = t3 - (tm+t_stop-t0);
 end
 
-%% specify ud, vd , rd during the driving maneuver portion
+%% specify ud, vd (NOT USED), rd during the driving maneuver portion
 t1_shifted = t1 + t0;
 ud1 = (p_u-u0)/tm*t1_shifted+u0; 
 dud1 = (p_u-u0)/tm*ones(1,length(t1_shifted));

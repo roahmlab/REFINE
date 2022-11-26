@@ -38,32 +38,16 @@ grav_const = 9.8;
 amax = 5; % a^{dec}: deceleration for braking maneuver
 tpk = 6;  % time duration of lane change maneuver
 tpk_dir = 3; % time duration of direction change and speed change maneuvers
-u_really_slow =5; % u^{cri}: critical speed that decides the guard of vehicle's hybrid system
+u_really_slow = 5; % u^{cri}: critical speed that decides the guard of vehicle's hybrid system
 top_speed = 30; % maximum speed of the vehicle
 car_length = L/2; % footprint of the vehicle can be expressed as interval([-car_length; -car_width], [car_length; car_width])
 car_width  = W/2;
-
-
-tbrk2 =1;
+tbrk2 = 1;
 Cw = 3.41;
 Caf2 = 1;
 Car2 = 1;     
-% Cbf  = 1e5;
-% Cbr  = 1e5;
-% C_delta = 3;
-% K_delta = 5; 
-% Kw = 20;
 
-% %Current Control Stuff
-% C_friction_1 = 6.0897; % NEVER USE CURRENT CONTROL FOR CARS
-% C_friction_2 = 10.5921;
-% C_current    = 0.4642;
-
-% max_Fy_uncertainty = 10; 
 max_Fy_uncertainty_spd = 2; 
-% max_Fyr_uncertainty = 10;
-% max_Fyr_uncertainty_braking = 0.5; 
-% max_Fyr_uncertainty_spd = 2; 
 max_Fx_uncertainty_braking  = 0;
 max_Fy_uncertainty_braking = 0.5;
 

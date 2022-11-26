@@ -141,4 +141,8 @@ for i=1:length(files)
     end
 end
 
-save(dir_folder+"../car_frs.mat",'M_mega','-v7.3','-nocompression')
+if isSim
+    save(dir_folder+"../car_frs.mat",'M_mega','-v7.3','-nocompression')
+else
+    save(dir_folder+"../rover_frs.mat",'M_mega','-v7.3','-nocompression')
+end

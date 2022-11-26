@@ -1,7 +1,10 @@
-function [T U Z] = gaussian_T_parameterized_traj_with_brake(t0,del_y,p_u,u0,t,symbolic_flag, not_speed_change, brake_time)
+function [T U Z] = gaussian_T_parameterized_traj_with_brake(t0,del_y,p_u,u0,t,symbolic_flag, not_speed_change, brake_time, isSim)
 % this function provides desired trajectory for a speed or lane change maneuver
+if ~exist('isSim')
+    isSim = 1;
+end
 load my_const.mat
-if(not_speed_change)
+if not_speed_change
     p_y = del_y;
 else
      p_y = 0; 
@@ -46,14 +49,19 @@ else
     t3 = t3 - (tm+t_stop-t0);
 end
 
-%% specify ud, vd , rd during the driving maneuver portion
+%% specify ud, vd (NOT USED), rd during the driving maneuver portion
 t1_shifted = t1 + t0;
 ud1 = (p_u-u0)/tm*t1_shifted+u0;
 dud1 = (p_u-u0)/tm*ones(1,length(t1_shifted));
 vd1 = zeros(size(t1_shifted));
 dvd1 = zeros(size(t1_shifted));
-rd1 = -p_y*((1125899906842624*exp(-((11*t1_shifted)/2 - (11*tm)/4).^2/tm^2).*((121*t1_shifted)/2 - (121*tm)/4))/(5311659529936249*tm));
-drd1 = -p_y*((68116944363978752*exp(-((11*t1_shifted)/2 - (11*tm)/4).^2/tm^2))/(5311659529936249*tm) - (1125899906842624*exp(-((11*t1_shifted)/2 - (11*tm)/4).^2/tm^2).*((121*t1_shifted)/2 - (121*tm)/4).^2)/(5311659529936249*tm^3));
+if isSim
+    rd1 = -p_y*((1125899906842624*exp(-((11*t1_shifted)/2 - (11*tm)/4).^2/tm^2).*((121*t1_shifted)/2 - (121*tm)/4))/(5311659529936249*tm));
+    drd1 = -p_y*((68116944363978752*exp(-((11*t1_shifted)/2 - (11*tm)/4).^2/tm^2))/(5311659529936249*tm) - (1125899906842624*exp(-((11*t1_shifted)/2 - (11*tm)/4).^2/tm^2).*((121*t1_shifted)/2 - (121*tm)/4).^2)/(5311659529936249*tm^3));
+else
+    rd1 = -p_y*((5929031807682153*exp(-(25*(t1_shifted - tm/2).^2)/8).*((25*t1_shifted)/4 - (25*tm)/8))/9007199254740992); 
+    drd1 = -p_y*((148225795192053825*exp(-(25*(t1_shifted - tm/2).^2)/8))/36028797018963968 - (5929031807682153*exp(-(25*(t1_shifted - tm/2).^2)/8).*((25*t1_shifted)/4 - (25*tm)/8).^2)/9007199254740992);
+end
 %% contingency braking before t_stop
 % (Do not use this symbolic mode to generate braking trajectory!!!!!)
 if symbolic_flag % place holder

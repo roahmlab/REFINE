@@ -1,7 +1,7 @@
-classdef highway_cruising_10_state_agent < RTD_agent_2D
+classdef highway_cruising_10_state_agent_awd < RTD_agent_2D
     % Agent of full-size vehicle model with closed loop dynamics using the
     % controller proposed by REFINE. NOTE the vehicle agent is assumed to
-    % be FWD in this script. 
+    % be AWD in this script. 
     
     properties
         
@@ -14,7 +14,7 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
         desired_initial_condition = [0; 0; 0; 1; 0; 0; 1; 0; 0; 0];
         
         footprint_vertices_for_plotting = [-2.4,-1.5,-1.5 0 0.3     2    2   2.4 2.4 2  2   0.3 0 -1.5 -1.5 -2.4 -2.4;
-                                           -0.5,-0.5 -1   -1 -0.5    -0.3 -1   -1  1  1 0.3  0.5 1 1   0.5 0.5 -0.5];
+                                           -0.5,-0.5 -1   -1 -0.5    -0.3 -1   -1  1  1 0.3  0.5 1 1   0.5 0.5 -0.5]/10;
         
         m
         lf
@@ -44,6 +44,8 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
 
         Mu
         Mr
+        b_u_pro
+        b_u_off
 
         
         Cus
@@ -56,11 +58,11 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
     
     methods
         %% constructor
-        function A = highway_cruising_10_state_agent(varargin)
+        function A = highway_cruising_10_state_agent_awd(varargin)
             % set up default superclass values
             name = 'highway_cruiser' ;
             
-            default_footprint = [4.8 2.2]; 
+            default_footprint = [0.52 0.28]; 
             n_states = 10 ;
             n_inputs = 6 ; % ud vd rd dud dvd drd
             stopping_time = 50 ; %not used
@@ -71,7 +73,7 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
             A@RTD_agent_2D('name',name,...
                 'footprint',default_footprint,...
                 'n_states',n_states,'n_inputs',n_inputs,...
-                'stopping_time',stopping_time,'sensor_radius',sensor_radius,varargin{:}) ;
+                'stopping_time',stopping_time,'sensor_radius',sensor_radius,varargin{:});
             
             load('my_const.mat')
             A.m  = m;
@@ -88,9 +90,11 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
             A.rw = rw;
             A.Mu = Mu;
             A.Mr = Mr;
+            A.b_u_pro = b_u_pro;
+            A.b_u_off = b_u_off;
             
             
-            %% proposed controller to cancel out dynamics; Front Wheel drive
+            %% proposed controller to cancel out dynamics; All Wheel drive
             A.Ku = Ku;
             A.Kh = Kh;
             A.Kr = Kr;
@@ -126,10 +130,10 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
             A.plot_wheel_at_time(t);
         end
         function plot_wheel_at_time(A,t)
-            wheel_size = [0.7 0.4];
+            wheel_size = [0.7 0.4]/10;
             wheel = make_box(wheel_size);
             wheel_position = [-2   -2  1.5 1.5
-                              -0.75 0.75 -0.75 0.75];
+                              -0.75 0.75 -0.75 0.75]/10;
             wheel_vertices = [];
             for i = 1:4
                 wheel_vertices = [wheel_vertices wheel+repmat(wheel_position(:,i),[1,5]) [NaN;NaN]];
@@ -224,13 +228,13 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
             vf = v + A.lf*r;
             vr = v - A.lr*r;
             alphar = - vr / max(u, A.u_cri*1.1); % modify denominator for numerical stability
-            Fywr = A.Car1*alphar;
+            Fywr = -A.Car1*alphar;
             desired_front_lat_force = (A.Izz*(r_dot_des + tau_r) + A.lr*Fywr)/A.lf;
             delta = desired_front_lat_force/A.Caf1 + vf/u;
 
             
 
-            % longitudina force computation for wheel speed w_cmd      
+            % longitudina force computation for wheel speed w_cmd
             kappaU = A.kappaPU + A.kappaIU*(u_err_sum);
             phiU = A.phiPU + A.phiIU*(u_err_sum);
             u_err = u - ud;
@@ -238,10 +242,12 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
             tau_u = -(kappaU*A.Mu + phiU) * err_term;
             desired_lon_force = (u_dot_des + tau_u - v*r)*A.m;
             Cbf = A.m * A.grav_const * A.lr / A.l * A.mu_bar;
+            Cbr = A.m * A.grav_const * A.lf / A.l * A.mu_bar;
+            lambda_fr = desired_lon_force/(Cbf+Cbr); % note lambda_f = lambda_r in AWD
             if uddot <= 0 
-                w_cmd = (desired_lon_force/Cbf * u + u) / A.rw;
+                w_cmd = (lambda_fr *  u + u) / A.rw;
             else
-                w_cmd = u/A.rw/(1-desired_lon_force/Cbf);
+                w_cmd = u/A.rw/(1-lambda_fr);
             end
         end
         function [delta, w_cmd, vlo, rlo, u_err] = Low_Spd_LLC(A,t,z,T,U,Z)
@@ -257,19 +263,24 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
             rlo = delta*u/(A.l+A.Cus*u^2/A.grav_const);
             vlo = rlo*(A.lr - u^2*mr/A.Car1);
             
-            u_dot_des = A.Ku*(ud -u) + uddot;   
+            u_dot_des = A.Ku*(ud -u) + uddot;
             kappaU = A.kappaPU + A.kappaIU*(u_err_sum);
             phiU = A.phiPU + A.phiIU*(u_err_sum);
             u_err = u - ud;
             err_term = A.Ku*u_err;
-            Mu_lo = A.max_Fx_uncertainty_braking / A.m;
+            Mu_lo = A.b_u_pro*u+A.b_u_off;
+            if abs(u)<0.01
+                Mu_lo = 0;
+            end
             tau_u = -(kappaU*Mu_lo + phiU) * err_term;
             desired_lon_force = (u_dot_des + tau_u - vlo*rlo)*A.m;
             Cbf = A.m * A.grav_const * A.lr / A.l * A.mu_bar;
+            Cbr = A.m * A.grav_const * A.lf / A.l * A.mu_bar;
+            lambda_fr = desired_lon_force/(Cbf+Cbr); % note lambda_f = lambda_r in AWD
             if uddot <= 0 
-                w_cmd = (desired_lon_force/Cbf *  u+ u) / A.rw;
+                w_cmd = (lambda_fr *  u + u) / A.rw;
             else
-                w_cmd = u/A.rw/(1-desired_lon_force/Cbf);
+                w_cmd = u/A.rw/(1-lambda_fr);
             end
             
         end
@@ -297,14 +308,15 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
             alphar = atan( uv_wr(2) ./ max(u, A.u_cri*1.1)); % modify denominator for numerical stability
             Fywr = -A.Car1*tanh(A.Car2*alphar);
             if uddot <= 0
-                lambda_f = (A.rw * w_cmd - uv_wf(1)) / max(uv_wf(1), 0.01);
+                lambda_fr = (A.rw * w_cmd - u) / max(u, 0.01); % note lambda_f = lambda_r in AWD
             else
-                lambda_f = (A.rw * w_cmd - uv_wf(1)) / max(A.rw * w_cmd, 0.01);
+                lambda_fr = (A.rw * w_cmd - u) / max(A.rw * w_cmd, 0.01); % note lambda_f = lambda_r in AWD
             end
             alphaf = atan( uv_wf(2) ./ (uv_wf(1) + sign(uv_wf(1)+0.001)*0.01));
             Cbf = A.m * A.grav_const * A.lr / A.l * A.mu_bar;
-            Fxwf = Cbf*lambda_f;
-            Fxwr = 0;
+            Cbr = A.m * A.grav_const * A.lf / A.l * A.mu_bar;
+            Fxwf = Cbf*lambda_fr;
+            Fxwr = Cbr*lambda_fr;
             Fywf = -A.Caf1*tanh(A.Caf2*alphaf);
             
             du =  v*r + (cos(delta)*Fxwf-sin(delta)*Fywf + Fxwr)/A.m;
