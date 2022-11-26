@@ -81,7 +81,6 @@ PredictInfo PredictInfoFromControllerMessage(
     } else {
       predict_info.poly_var1_ = msg.ay;
     }
-    // TODO
     predict_info.use_15_30_ = false;
   }
   return predict_info;
@@ -94,7 +93,7 @@ std::vector<FrsSelectInfo> GetParamsToSearchOver(const FrsTotal& frs,
   // Set of FRSes to search
   std::vector<FrsSelectInfo> frses_to_search;  // vector of struct
 
-  // (En/Dis)able certain manu types
+  // (En/Dis)able certain manu types for testing
   const bool search_au = true;
   const bool search_lan = true;
   const bool search_dir = true;
@@ -165,7 +164,7 @@ std::vector<FrsSelectInfo> GetParamsToSearchOver(const FrsTotal& frs,
     const int manu_set_size = static_cast<int>(manu_set.size());
     for (int i = 0; i < manu_set_size; ++i) {
       const int num_search = std::min(
-          1, static_cast<int>(manu_set.at(i).size()));  // TODO Remove Min
+          1, static_cast<int>(manu_set.at(i).size()));  
       add_frs(0, num_search, is_table_populated, mega_u, manu_type, u0_idx,
               false, i, true);
     }
@@ -253,7 +252,7 @@ ParamRet GenerateParameter(
   // TODO could just use a std::atomic<int> for the index.
   for (int outer_idx = 0; outer_idx < num_outer; ++outer_idx) {
     // Run each ipopt application in parallel
-#pragma omp parallel for  // JL: serial for debugging
+#pragma omp parallel for  
     for (int app_idx = 0; app_idx < num_apps; ++app_idx) {
       const int total_idx = next_idx++;
       if (total_idx >= num_search) {
@@ -276,7 +275,6 @@ ParamRet GenerateParameter(
                              << " idx1:  " << frs_select_info.idx1_
                              << " [app idx]: " << app_idx);  // t0 idx
 
-      // TODO seems like we should just add a function to go state->PointXYH
       const auto obs_info_to_use = ConvertObsToZonoWithHeading(
           latest_read_obs_global, fp_state.GetXYH(), mirror);
 
@@ -308,7 +306,6 @@ ParamRet GenerateParameter(
           x_des_to_use.x_, x_des_to_use.y_, x_des_to_use.h_);
       auto sliced = frs_to_use.SliceAt(fp_state.u_, v_to_use, r_to_use);
       const auto cons = GenerateConstraints(sliced, obs_info_to_use);
-      // WriteConstraints(cons);
 
       std::shared_ptr<Ipopt::Number[]> a_mat = cons.a_con_arr_;
       std::shared_ptr<Ipopt::Number[]> b_mat = cons.b_con_arr_;
@@ -335,14 +332,12 @@ ParamRet GenerateParameter(
         const Ipopt::Number final_obj =
             ipopt_success ? (app->Statistics()->FinalObjective())
                           : mnlp->GetFeasibleCost();
-        // TODO this is ok?
         const auto sln_k_ =
             ipopt_success ? (mnlp->sln_k_) : (mnlp->GetFeasibleParam());
         success_vals.at(total_idx) = true;
         cost_vals.at(total_idx) = final_obj;
         param_vals_mirrored.at(total_idx) = mirror_mult * sln_k_;
 
-        // TODO REVERT
         const std::string output_str = fmt::format(
             "IPOPT: SUCCESS [K: {:.2f} (Man: {:.2f})] [MANU: {}] [MIR: {}] "
             "[COST: {:.2f}] [IP_SUCCESS: {}] [REALLY: {}] [X: {:.4f}] [Y: "
@@ -403,11 +398,11 @@ ParamRet GenerateParameter(
   ret_val.y0 = fp_state.y_;
   ret_val.h0 = fp_state.GetHeading();
   ret_val.u0 = fp_state.u_;
-  ret_val.w0 = fp_state.u_;  // TODO
+  ret_val.w0 = fp_state.u_;  
   ret_val.v0 = fp_state.v_;
   ret_val.r0 = fp_state.r_;
-  ret_val.r_err_sum0 = 0.0;  // TODO
-  ret_val.h_err_sum0 = 0.0;  // TODO
+  ret_val.r_err_sum0 = 0.0;  
+  ret_val.h_err_sum0 = 0.0; 
   ret_val.x_des_local_x = x_des_normal.x_;
   ret_val.x_des_local_y = x_des_normal.y_;
   ret_val.x_des_local_h = x_des_normal.h_;
@@ -419,7 +414,7 @@ ParamRet GenerateParameter(
   ret_val.opt_search_traj_idx0s = {};
   ret_val.opt_search_traj_idx1s = {};
   ret_val.opt_search_should_mirror = {};
-  ret_val.times = {};  // TODO
+  ret_val.times = {};  
 
   for (auto success_val : success_vals) {
     ret_val.opt_search_successes.push_back(success_val);
@@ -525,7 +520,6 @@ ParameterGenerator::FpReqSimInfo ParameterGenerator::ChooseParameters() {
   WGUARD_ROS_INFO_STREAM("FPS: " << forward_predicted_state_.ToStringXYHUVR());
   ChooseDesiredWaypoint();
 
-  // TODO this should probably just be a function
   const PointXYH state_xyh = forward_predicted_state_.GetXYH();
   const auto x_des_normal_ = x_des_.ToLocalFrame(state_xyh);
   const auto x_des_mirror_ = x_des_normal_.Mirror();
@@ -558,7 +552,6 @@ ParameterGenerator::FpReqSimInfo ParameterGenerator::ChooseParameters() {
     gen_param_out_msg.ay = ay;
     gen_param_out_msg.t0_offset = t0_offset;
     gen_param_out_msg.header.stamp = ros::Time::now();
-    // TODO make sure this meshes with controller okay
     gen_param_out_msg.manu_type = ManuToUint8(manu_type);
     gen_param_publisher_.publish(gen_param_out_msg);
     return {true, au, ay, manu_type};
@@ -631,12 +624,7 @@ void ParameterGenerator::CallbackObs(
 
 void ParameterGenerator::RunSimulation() {
   WGUARD_ROS_INFO("RunSimulation\n");
-  // CallbackFpReq (false running auto, 0 state)
-  // TODO REMOVE K: 0.32951out of [0.3295, 0.659]
-  // TODO REMOVE [ INFO] [1642399081.429139780]: IPOPT: SUCCESS [K: -0.33]
-  // [MANU: DIR] [MIR: true] [COST: 1.91] [IP_SUCCESS: true] [REALLY: true]
-  // [X: 10.4581] [Y: 0.3102] [H: 0.4200] [U: 0.8857] [V: -0.0130] [R:
-  // -0.0563]
+
 
   rover_control_msgs::RoverDebugStateStamped init_msg{};
 
