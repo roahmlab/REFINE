@@ -209,7 +209,7 @@ for t0_idx = 1
                 int1 = interval(z1); int1 = int1(1:2);
                 int2 = interval(z2); int2 = int2(1:2);
                 mini = min([infimum(int1),infimum(int2)],[],2);
-                maxi = min([supremum(int1),supremum(int2)],[],2);
+                maxi = max([supremum(int1),supremum(int2)],[],2);
                 range_ori = maxi - mini;
                 
                 G1 = z1.generators;
