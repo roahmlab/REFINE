@@ -63,7 +63,7 @@ reachability_info = submap{j};
 where `M_mega` is saved in `car_frs.mat`.
 
 Recall each desired trajectory is appended by a contingency braking maneuver for safety concern, then the reachability analysis result `reachability_info` is saved as a struct that contains 3 fields:
-- *vehRS_save:* an array of cell where each cell contains a zonotope reachable set over some time interval. Details of the zonotope reachable set are provided in [2.4 Zonotope Reachable Sets](https://github.com/roahmlab/REFINE/edit/main/Offline_Reachability_Analysis/README.md#24-zonotope-reachable-sets).
+- *vehRS_save:* an array of cell where each cell contains a zonotope reachable set over some time interval. Details of the zonotope reachable set are provided in [2.4 Zonotope Reachable Sets](#24-zonotope-reachable-sets).
 - *brake_idx1:* the index of a zonotope reachable set such that the contingency braking maneuver starts its execution within the corresponding time interval of `reachability_info.vehRS_save{brake_idx1}`.
 - *brake_idx2:* the index of a zonotope reachable set such that the guard from high-speed vehicle model to low-speed vehicle model is triggered within the corresponding time interval of `reachability_info.vehRS_save{brake_idx2}`, while the contingency braking maneuver is being executed.
 
