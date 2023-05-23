@@ -2,26 +2,26 @@
 
 ## 1. Zonotope Reachable Sets Computation
 
-**Note:** offline reachability analysis is achieved without the provided docker image being launched.
+**Note:** offline reachability analysis can be run without launching the provided docker image, using MATLAB.
 
-**Note:** all reachable sets are computed in **body frame**, i.e. the initial position and heading of the ego vehicle are 0.
+**Note:** all reachable sets are computed with respect to the **body frame**, i.e., each FRS begins aligned with the ego vehicle's initial pose.
 
-REFINE utilizes 3 families of desired trajectories that are observed during daily driving to achieve *speed change*, *direction change* and *lane change*. 
+REFINE utilizes 3 families of desired trajectories that are observed during daily driving: *speed changes*, *direction changes* and *lane changes*. 
 Each desired trajectory is parametrized by control parameter $p = [p_u, p_y]^\top$ where $p_u$ denotes desired longitudinal speed and $p_y$ decides desired lateral displacement. 
 To perform offline reachability analysis using such desired trajectories:
 
-- Run [`space_subdivision.m`](https://github.com/roahmlab/REFINE/blob/main/Offline_Reachability_Analysis/space_subdivision.m) to compute subdivision of the initial longitudinal velocity space and contrl parameter space for simulation on a full-size Front-Wheel-Drive vehicle. Change `isSim` to `0` for All-Wheel-Drive racecar robot. 
+- Run [`space_subdivision.m`](https://github.com/roahmlab/REFINE/blob/main/Offline_Reachability_Analysis/space_subdivision.m) to compute the partition information over the initial longitudinal velocity space and control parameter space for simulation on a full-size Front-Wheel-Drive vehicle. Change the `isSim` parameter to `0` for All-Wheel-Drive racecar robot. 
 
 - Run [`vehicle_dynamics_generation.m`](https://github.com/roahmlab/REFINE/blob/main/Offline_Reachability_Analysis/vehicle_dynamics_generation.m)
 to generate closed-loop vehicle dynamics with proposed controller over 3 families of desired trajectories.
 
-- Run [`FRS_computation_speed_change.m`](https://github.com/roahmlab/REFINE/blob/main/Offline_Reachability_Analysis/FRS_computation_speed_change.m) to compute FRS for speed change maneuvers.
+- Run [`FRS_computation_speed_change.m`](https://github.com/roahmlab/REFINE/blob/main/Offline_Reachability_Analysis/FRS_computation_speed_change.m) to compute the FRSes for speed change maneuvers.
 
-- Run [`FRS_computation_direction_change.m`](https://github.com/roahmlab/REFINE/blob/main/Offline_Reachability_Analysis/FRS_computation_direction_change.m) to compute FRS for direction change maneuvers.
+- Run [`FRS_computation_direction_change.m`](https://github.com/roahmlab/REFINE/blob/main/Offline_Reachability_Analysis/FRS_computation_direction_change.m) to compute the FRSes for direction change maneuvers.
 
-- Run [`FRS_computation_lane_change.m`](https://github.com/roahmlab/REFINE/blob/main/Offline_Reachability_Analysis/FRS_computation_lane_change.m) to compute FRS for lane change maneuvers.
+- Run [`FRS_computation_lane_change.m`](https://github.com/roahmlab/REFINE/blob/main/Offline_Reachability_Analysis/FRS_computation_lane_change.m) to compute FRSes for lane change maneuvers.
 
-- Run [`wrap_up_FRS.m`](https://github.com/roahmlab/REFINE/blob/main/Offline_Reachability_Analysis/wrap_up_FRS.m) to wrap up all computed FRS and necessary information as a map container that is used for online planning.
+- Run [`wrap_up_FRS.m`](https://github.com/roahmlab/REFINE/blob/main/Offline_Reachability_Analysis/wrap_up_FRS.m) to wrap up all computed FRSes and other necessary information as a map container that is used for online planning.
 Resulted map container is provided as [`car_frs.mat`](https://drive.google.com/drive/folders/1WZbFFhCyhYQlMJxuV4caIzNoa-Q9VZkW?usp=sharing).
 
 ## 2. Data Structure
@@ -70,21 +70,21 @@ Recall each desired trajectory is appended by a contingency braking maneuver for
 ### 2.4 Zonotope Reachable Sets
 
 Each zonotope reachable set `Z` saved in `reachability_info.vehRS_save` is a 20-dimensional zonotope that over-approximates the ego vehicle's behavior over some time interval `t_interval`. 
-Meanings of all 20 dimensions in `Z` are listed as follows (see [`vehicle_dynamics_generation.m`](https://github.com/roahmlab/REFINE/blob/main/Offline_Reachability_Analysis/vehicle_dynamics_generation.m) for details):
-- dimension 1: vehicle position along $x$-axis of the world frame;
-- dimension 2: vehicle position along $y$-axis of the world frame;
-- dimension 3: vehicle heading $h$;
-- dimension 4: vehicle longitudinal velocity $u$ in the body frame;
-- dimension 5: vehicle lateral velocity $v$ in the body frame;
-- dimension 6: vehicle yaw rate $r$;
-- dimension 7: initial longitudinal velocity $u_0$ (**sliceable**);
-- dimension 8: initial lateral velocity $v_0$ (**sliceable**);
-- dimension 9: initial yaw rate $r_0$ (**sliceable**);
-- dimension 10: auxiliary state to help tracking the starting time of a driving maneuver;
-- dimension 11: control parameter $p_u$ (**sliceable when applying a speed change maneuver**);
-- dimension 12: control parameter $p_y$ (**sliceable when applying a direction/lane change maneuver**);
-- dimension 13 ~ 19: auxiliarty states for the computation of proposed robust partial feedback linearization controller during reachability analysis;
-- dimension 20: time $t$.
+Meanings of all 20 dimensions in `Z` are listed as follows (see [`vehicle_dynamics_generation.m`](https://github.com/roahmlab/REFINE/blob/main/Offline_Reachability_Analysis/vehicle_dynamics_generation.m) for details, and note that ``world frame'' referred to below is with respect to the initial pose of the ego vehicle):
+- dimension 1: vehicle position along $x$-axis of the world frame [m]
+- dimension 2: vehicle position along $y$-axis of the world frame [m]
+- dimension 3: vehicle heading $h$ [rad]
+- dimension 4: vehicle longitudinal velocity $u$ in the body frame [m/s]
+- dimension 5: vehicle lateral velocity $v$ in the body frame [m/s]
+- dimension 6: vehicle yaw rate $r$ [rad/s]
+- dimension 7: initial longitudinal velocity $u_0$ (**sliceable**) [m/s]
+- dimension 8: initial lateral velocity $v_0$ (**sliceable**) [m/s]
+- dimension 9: initial yaw rate $r_0$ (**sliceable**) [rad/s]
+- dimension 10: auxiliary state to help tracking the starting time of a driving maneuver
+- dimension 11: control parameter $p_u$ (**sliceable when applying a speed change maneuver**) [m/s]
+- dimension 12: control parameter $p_y$ (**sliceable when applying a direction/lane change maneuver**)
+- dimension 13 - 19: auxiliarty states for the computation of proposed robust partial feedback linearization controller during reachability analysis
+- dimension 20: time $t$ [s]
 
 Such time interval can be computed as follows:
 ```
