@@ -1,5 +1,5 @@
 # REFINE
-REFINE relis on Docker to run simulation. Note, simulation should be run in the MATLAB invoked by the provided docker image. See below for detail. 
+REFINE relies on Docker to run simulation. Note, simulation should be run in the MATLAB invoked by the provided docker image. See below for detail. 
 
 ## Installing Dependencies
 * Install Docker Engine, following the instructions on the [Docker website](https://docs.docker.com/desktop/install/linux-install/).
