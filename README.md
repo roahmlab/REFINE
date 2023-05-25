@@ -4,6 +4,7 @@ REFINE is a safety real-time trajectory planning framework for autonomous drivin
 REFINE utilizes a parametrized robust controller that partially linearizes the vehicle dynamics in the presence of modeling error. 
 Offline zonotope-based reachability analysis is performed on the closed-loop, full order vheicle dynamics to compute the corresponding control-parametrized, over-approximate Forward Reachable Sets (FRS). 
 Real-time trajectory planning is achieved by solving an optimization framework in real-time with the pre-computed, control-parametrized FRS being used to ensure vehicle safety.
+The link to the project website can be found [here](https://roahmlab.github.io/REFINE_website/).
 
 <p align="center">
   <img height="300" src="/Image/overview.png"/>
