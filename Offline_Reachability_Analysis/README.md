@@ -21,7 +21,7 @@ to generate closed-loop vehicle dynamics with proposed controller over 3 familie
 
 - Run [`FRS_computation_lane_change.m`](https://github.com/roahmlab/REFINE/blob/main/Offline_Reachability_Analysis/FRS_computation_lane_change.m) to compute FRSes for lane change maneuvers.
 
-- Run [`wrap_vxp_FRS.m`](https://github.com/roahmlab/REFINE/blob/main/Offline_Reachability_Analysis/wrap_vxp_FRS.m) to wrap up all computed FRSes and other necessary information as a map container that is used for online planning.
+- Run [`wrap_up_FRS.m`](https://github.com/roahmlab/REFINE/blob/main/Offline_Reachability_Analysis/wrap_vxp_FRS.m) to wrap up all computed FRSes and other necessary information as a map container that is used for online planning.
 Resulted map container is provided as [`car_frs.mat`](https://drive.google.com/drive/folders/1WZbFFhCyhYQlMJxuV4caIzNoa-Q9VZkW?usp=sharing).
 
 ## 2. Data Structure

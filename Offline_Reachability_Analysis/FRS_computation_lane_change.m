@@ -77,7 +77,7 @@ for t0_idx = 1
             [vehRS,Rt] = reach(sys, options);
             fprintf('driving maneuver finished\n')
 
-            %% phase 2: contigency braking when u>vx_really_slow = u_cri. Note: dhd = rd = 0
+            %% phase 2: contigency braking when vx>vx_really_slow = u_cri. Note: dhd = rd = 0
 
             temp = interval(Rt{end}{1}.set);
             vx_scale = [infimum(temp(4)),supremum(temp(4))];

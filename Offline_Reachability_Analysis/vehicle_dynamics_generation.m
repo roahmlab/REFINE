@@ -21,9 +21,9 @@ vyd = U(2,1);
 rd = U(3,1);
 hd = zeros(size(U(1,1)));
 ddyn = gen_closed_loop_dyn (hd, vx, vxd, vy, vyd, r, rd,h, Fy_error, Fx_error, err_r_sum, err_h_sum, err_vx_sum, t);
-syms x y tdummy udummy p_y
+syms x y tdummy vxdummy p_y
 dyn = [x; y; h; vx; vy; r; vx0;vy0; r0;t0;p_vx; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_vx_sum; h0; t];
-matlabFunction(ddyn, 'File', 'dyn_u_change', 'vars', {tdummy dyn udummy});
+matlabFunction(ddyn, 'File', 'dyn_u_change', 'vars', {tdummy dyn vxdummy});
 
 % contigency braking (high-speed)
 vxd = U(1,2);
@@ -31,13 +31,13 @@ vyd = U(2,2);
 rd = U(3,2);
 ddyn = gen_closed_loop_dyn (hd, vx, vxd, vy, vyd, r, rd,h, Fy_error, Fx_error, err_r_sum, err_h_sum, err_vx_sum, t);
 dyn = [x;y; h; vx; vy; r; vx0;vy0; r0;t0;p_vx; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_vx_sum; h0; t];
-matlabFunction(ddyn, 'File', 'dyn_u_brake', 'vars', {tdummy dyn udummy});
+matlabFunction(ddyn, 'File', 'dyn_u_brake', 'vars', {tdummy dyn vxdummy});
 
 % contigency braking (low-speed)
 vxd = U(1,3); 
 ddyn = gen_low_speed (vx,vxd,h, rd,t,err_vx_sum);
 dyn = [x; y; h; vx; vy; r;vx0;vy0; r0;t0;p_vx; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_vx_sum; h0; t];
-matlabFunction(ddyn, 'File', 'dyn_u_slow', 'vars', {tdummy dyn udummy});
+matlabFunction(ddyn, 'File', 'dyn_u_slow', 'vars', {tdummy dyn vxdummy});
 
 %% Lane Change
 p_vx = vx0;
@@ -51,7 +51,7 @@ rd = U(3,1);
 hd = Z(1);
 ddyn = gen_closed_loop_dyn (hd - h0, vx, vxd, vy, vyd, r, rd,h, Fy_error, Fx_error, err_r_sum, err_h_sum, err_vx_sum, t);
 dyn = [x; y; h; vx; vy; r; vx0;vy0; r0;t0;p_vx; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_vx_sum; h0; t];
-matlabFunction(ddyn, 'File', 'dyn_y_change', 'vars', {tdummy dyn udummy});
+matlabFunction(ddyn, 'File', 'dyn_y_change', 'vars', {tdummy dyn vxdummy});
 
 % contigency braking (high-speed)
 vxd = U(1,2);
@@ -60,13 +60,13 @@ rd = U(3,2);
 hd = subs(Z(1),t,tpk);
 ddyn = gen_closed_loop_dyn (hd-h0, vx, vxd, vy, vyd, r, rd,h, Fy_error, Fx_error, err_r_sum, err_h_sum, err_vx_sum, t);
 dyn = [x; y; h; vx; vy; r; vx0;vy0; r0;t0;p_vx; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_vx_sum; h0; t];
-matlabFunction(ddyn, 'File', 'dyn_y_brake', 'vars', {tdummy dyn udummy});
+matlabFunction(ddyn, 'File', 'dyn_y_brake', 'vars', {tdummy dyn vxdummy});
 
 % contigency braking (low-speed)
 vxd = U(1,3);
 ddyn = gen_low_speed (vx,vxd,h,rd,t,err_vx_sum);
 dyn = [x; y; h; vx; vy; r;vx0;vy0; r0;t0;p_vx; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_vx_sum; h0; t];
-matlabFunction(ddyn, 'File', 'dyn_y_slow', 'vars', {tdummy dyn udummy});
+matlabFunction(ddyn, 'File', 'dyn_y_slow', 'vars', {tdummy dyn vxdummy});
 
 %% Direction change
 p_vx = vx0;
@@ -80,7 +80,7 @@ rd = U(3,1);
 hd = Z(1);
 ddyn = gen_closed_loop_dyn (hd-h0, vx, vxd, vy, vyd, r, rd,h, Fy_error, Fx_error, err_r_sum, err_h_sum, err_vx_sum, t);
 dyn = [x; y; h; vx; vy; r; vx0;vy0; r0;t0;p_vx; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_vx_sum; h0; t];
-matlabFunction(ddyn, 'File', 'dyn_dir_change', 'vars', {tdummy dyn udummy});
+matlabFunction(ddyn, 'File', 'dyn_dir_change', 'vars', {tdummy dyn vxdummy});
 
 % contigency braking (high-speed)
 vxd = U(1,2);
@@ -89,13 +89,13 @@ rd = U(3,2);
 hd = subs(Z(1),t,tpk_dir);
 ddyn = gen_closed_loop_dyn (hd-h0, vx, vxd, vy, vyd, r, rd,h, Fy_error, Fx_error, err_r_sum, err_h_sum, err_vx_sum, t);
 dyn = [x; y; h; vx; vy; r; vx0;vy0; r0;t0;p_vx; p_y;  brake_time; Fy_error; Fx_error; err_r_sum; err_h_sum; err_vx_sum;h0; t];
-matlabFunction(ddyn, 'File', 'dyn_dir_brake', 'vars', {tdummy dyn udummy});
+matlabFunction(ddyn, 'File', 'dyn_dir_brake', 'vars', {tdummy dyn vxdummy});
 
 % contigency braking (low-speed)
 vxd = U(1,3);
 ddyn = gen_low_speed (vx,vxd,h, rd,t,err_vx_sum);
 dyn = [x; y; h; vx; vy; r;vx0;vy0; r0;t0;p_vx; p_y; brake_time;  Fy_error; Fx_error; err_r_sum; err_h_sum;err_vx_sum; h0; t];
-matlabFunction(ddyn, 'File', 'dyn_dir_slow', 'vars', {tdummy dyn udummy});
+matlabFunction(ddyn, 'File', 'dyn_dir_slow', 'vars', {tdummy dyn vxdummy});
 
 
 

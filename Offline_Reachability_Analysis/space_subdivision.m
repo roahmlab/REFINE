@@ -23,7 +23,7 @@ vy0 = 0;
 t0 = 0;
 r0 = 0;
 if isSim
-    vx0_vec = 5.25:0.5:29.75; % partition on the initial condition space of u
+    vx0_vec = 5.25:0.5:29.75; % partition on the initial condition space of vx
     t0_dt = 3; % because time duration of a lane change maneuver is as twice as that of a speed/direction change maneuver, t0_dt provides options to execute the lane change maneuver from the beginning and middle (not used in REFINE).
 else
     vx0_vec = 0.6:0.1:2.0;

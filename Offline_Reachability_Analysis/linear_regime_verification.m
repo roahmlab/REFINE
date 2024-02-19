@@ -14,7 +14,7 @@ function [FRS, isgood] = linear_regime_verification(FRS, manu_type, isSim)
     
     FRS_itv = interval(FRS);
     h = FRS_itv(3);
-    u = FRS_itv(4);
+    vx = FRS_itv(4);
     vy = FRS_itv(5);
     r = FRS_itv(6);
     t0 = Z(10,1);
@@ -29,16 +29,16 @@ function [FRS, isgood] = linear_regime_verification(FRS, manu_type, isSim)
 
     [hd, vxd, dvxd, rd, drd] = get_ref(t0,tbrk1,t,vx0,h0,p_vx,p_y,manu_type,isSim);
 
-    % trim u for stabalization when u appears in denomenator as suggested
+    % trim vx for stabalization when vx appears in denomenator as suggested
     % by Tae-Yun Kim et al, Advanced slip ratio for ensuring numerical
     % stability of low-speed driving simulation
-    uub = supremum(u);
-    ulb = infimum(u);
+    uub = supremum(vx);
+    ulb = infimum(vx);
     uden = interval(max(max(vx_really_slow,1)*1.1,ulb), max(max(vx_really_slow,1)*1.1,uub));
 
     if uub <= vx_really_slow
-        r = rd; % recall delta = rd * (lr+lf+Cus*u^2) / u and Cus = m/(lr+lf)*(lr/Caf1 - lf/Car1);
-        vy = lr*r - m*lf/Car1/(lf+lr)*u^2*r;
+        r = rd; % recall delta = rd * (lr+lf+Cus*vx^2) / vx and Cus = m/(lr+lf)*(lr/Caf1 - lf/Car1);
+        vy = lr*r - m*lf/Car1/(lf+lr)*vx^2*r;
         alpha_r = -(vy - lr*r) / uden;
     else
         vlb = infimum(vy);
@@ -90,11 +90,11 @@ function [FRS, isgood] = linear_regime_verification(FRS, manu_type, isSim)
     end
 
     % test slip ratio 
-    tau_vx = ((kappaP_vx+kappaI_vx*err_vx_sum)*Mu + (phiP_vx+phiI_vx*err_vx_sum)) * (u-vxd);
+    tau_vx = ((kappaP_vx+kappaI_vx*err_vx_sum)*Mu + (phiP_vx+phiI_vx*err_vx_sum)) * (vx-vxd);
     if isSim
-        lambda_f = (lf+lr)/grav_const/lr/mu_bar*(-Ku*(u-vxd) + dvxd -vy*r + tau_vx);
+        lambda_f = (lf+lr)/grav_const/lr/mu_bar*(-Ku*(vx-vxd) + dvxd -vy*r + tau_vx);
     else
-        lambda_f = 1/grav_const/mu_bar*(-Ku*(u-vxd) + dvxd -vy*r + tau_vx); % notice lambda_f = lambda_r in AWD
+        lambda_f = 1/grav_const/mu_bar*(-Ku*(vx-vxd) + dvxd -vy*r + tau_vx); % notice lambda_f = lambda_r in AWD
     end
     if supremum(abs(lambda_f)) > lambda_cri
         FRS = zonotope([FRS.Z, [1000; 1000; zeros(dim-2,1)]]);
