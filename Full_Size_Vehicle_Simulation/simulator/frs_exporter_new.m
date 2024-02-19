@@ -7,7 +7,7 @@
 %%
 % % % % lan_change_info = load('/home/nova/downloads/frs-info-20211013/lane_change_Ay_info');
 % % % % dir_change_info = load('/home/nova/downloads/frs-info-20211013/dir_change_Ay_info');
-% % % % u0_vec_normal = lan_change_info.u0_vec;
+% % % % u0_vec_normal = lan_change_info.vx0_vec;
 % % % % bin_spacing_normal = diff(u0_vec_normal(1:2));
 % % % % frs_min_spd_normal = u0_vec_normal(1) - (bin_spacing_normal / 2.0);
 % % % % frs_max_spd_normal = u0_vec_normal(end) + (bin_spacing_normal / 2.0);
@@ -75,8 +75,8 @@ write_frs(frs_full_data, 'test_frs_aug30_no_time.txt', [], [], u0_minmaxes_indiv
 function write_frs(frs, out_fname, lan_change_info, dir_change_info, u0_intervals, alternating_au)
     has_info = ~isempty(lan_change_info) && ~isempty(dir_change_info);
     if has_info
-        assert(all(lan_change_info.u0_vec == dir_change_info.u0_vec));
-        u0_centers = lan_change_info.u0_vec;
+        assert(all(lan_change_info.vx0_vec == dir_change_info.vx0_vec));
+        u0_centers = lan_change_info.vx0_vec;
         bin_spacing = diff(u0_centers(1:2));
         u0_mins = u0_centers - (bin_spacing / 2);
         u0_maxs = u0_mins + bin_spacing;

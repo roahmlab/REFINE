@@ -1,4 +1,4 @@
-function [T U Z] = sin_one_hump_parameterized_traj_with_brake(t0,del_y,p_u,u0,t,symbolic_flag, not_speed_change,brake_time)
+function [T U Z] = sin_one_hump_parameterized_traj_with_brake(t0,del_y,p_vx,u0,t,symbolic_flag, not_speed_change,brake_time)
 % this function provides desired trajectory for a speed or direction change maneuver
 load my_const.mat
 if not_speed_change
@@ -15,13 +15,13 @@ if symbolic_flag
     Z = [];
     tm = tpk_dir;
     if ~exist('brake_time')
-        t_stop = (p_u - u_really_slow)/amax; 
+        t_stop = (p_vx - vx_really_slow)/amax; 
     else
         t_stop = brake_time;
     end
     
 else 
-    t_stop = (p_u - u_really_slow)/amax; 
+    t_stop = (p_vx - vx_really_slow)/amax; 
     if t_stop < 0
         t_stop = 0;
     end
@@ -40,8 +40,8 @@ end
 
 %% specify ud, vd (NOT USED), rd during the driving maneuver portion
 t1_shifted = t1 + t0;
-ud1 = (p_u-u0)/tm*t1_shifted+u0; 
-dud1 = (p_u-u0)/tm*ones(1,length(t1_shifted));
+ud1 = (p_vx-u0)/tm*t1_shifted+u0; 
+dud1 = (p_vx-u0)/tm*ones(1,length(t1_shifted));
 
 vd1 = zeros(size(t1_shifted));
 dvd1 =zeros(size(t1_shifted));
@@ -51,8 +51,8 @@ drd1 = (p_y*pi*sin((2*pi*t1_shifted)/tm))/tm;
 %% contingency braking before t_stop
 % (Do not use the symbolic mode to generate braking trajectory!!!!!)
 if symbolic_flag % place holder
-    ud2 = p_u - (p_u-u_really_slow)*(t2)/t_stop;
-    dud2 = -(p_u-u_really_slow)/t_stop*ones(1,length(t2));
+    ud2 = p_vx - (p_vx-vx_really_slow)*(t2)/t_stop;
+    dud2 = -(p_vx-vx_really_slow)/t_stop*ones(1,length(t2));
     vd2 = zeros(1,length(t2));
     dvd2 = zeros(1,length(t2));
     rd2 = zeros(1,length(t2));
@@ -61,8 +61,8 @@ else
     if t_stop == 0
         ud2 = []; dud2 = []; vd2 = []; dvd2 = []; rd2 = []; drd2 =[];
     else
-        ud2 = p_u - (p_u-u_really_slow)*(t2)/t_stop;
-        dud2 = -(p_u-u_really_slow)/t_stop*ones(1,length(t2));
+        ud2 = p_vx - (p_vx-vx_really_slow)*(t2)/t_stop;
+        dud2 = -(p_vx-vx_really_slow)/t_stop*ones(1,length(t2));
         vd2 = zeros(1,length(t2));
         dvd2 = zeros(1,length(t2));
         rd2 = zeros(1,length(t2));

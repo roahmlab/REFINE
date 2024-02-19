@@ -39,7 +39,7 @@ classdef highwayAgentHelper < agentHelper
             AH.HLP = HLP;
             info_file_dir = load('dir_change_Ay_info.mat');
 %             info_file_lan = load('lane_change_Ay_info.mat');
-            AH.u0_array = info_file_dir.u0_vec; 
+            AH.u0_array = info_file_dir.vx0_vec; 
             AH.truncating_factor = 1;
         end
         

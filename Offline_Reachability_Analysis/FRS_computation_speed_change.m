@@ -26,17 +26,17 @@ for t0_idx = 1:length(t0_arr)
     options.tStart = 0;
     options.x0 = zeros(dim,1);
     
-    for u0 = u0_vec(1:end)
-        if isSim && u0 == u0_vec(1) % u0 = u0_vec(1) causes splitting, so start from u0_vec(2)
+    for vx0 = vx0_vec(1:end)
+        if isSim && vx0 == vx0_vec(1) % vx0 = vx0_vec(1) causes splitting, so start from vx0_vec(2)
             continue
-        elseif ~isSim && u0 < u0_vec(3) % avoid splitting
+        elseif ~isSim && vx0 < vx0_vec(3) % avoid splitting
             continue
         end
 
-        [~,u0_idx ]=min(abs(u0_vec -u0));
-        for Au_idx = 1:length(u0_vec)
+        [~,vx0_idx ]=min(abs(vx0_vec -vx0));
+        for Au_idx = 1:length(vx0_vec)
             %% phase 1: driving maneuver - speed change
-            if isSim && abs(Au_idx -u0_idx) > 20 % avoid dramatic change in speed
+            if isSim && abs(Au_idx -vx0_idx) > 20 % avoid dramatic change in speed
                 continue;
             end
             if isSim && Au_idx == 1 % avoid splitting
@@ -46,18 +46,18 @@ for t0_idx = 1:length(t0_arr)
             end
 
             del_y_idx = 1; 
-            p_u = u0_vec(Au_idx);
-            [u0,p_u] 
+            p_vx = vx0_vec(Au_idx);
+            [vx0,p_vx] 
             options.x0 = zeros(dim,1);
             options.tFinal = tm-t0;
             options.timeStep = 0.01;
-            options.x0(4) = u0;
-            options.x0(5) = v0_limit_c(t0_idx,del_y_idx,u0_idx);
-            options.x0(8) = v0_limit_c(t0_idx,del_y_idx,u0_idx);
-            options.x0(6) = r0_limit_c(t0_idx,del_y_idx,u0_idx);
-            options.x0(9) = r0_limit_c(t0_idx,del_y_idx,u0_idx);
-            options.x0(7) = u0;
-            options.x0(11) = p_u; 
+            options.x0(4) = vx0;
+            options.x0(5) = vy0_limit_c(t0_idx,del_y_idx,vx0_idx);
+            options.x0(8) = vy0_limit_c(t0_idx,del_y_idx,vx0_idx);
+            options.x0(6) = r0_limit_c(t0_idx,del_y_idx,vx0_idx);
+            options.x0(9) = r0_limit_c(t0_idx,del_y_idx,vx0_idx);
+            options.x0(7) = vx0;
+            options.x0(11) = p_vx; 
             options.x0(10) = t0;
             options.x0(12) = 0;
             options.x0(14) = 0;
@@ -71,24 +71,24 @@ for t0_idx = 1:length(t0_arr)
                 dely0 = zeros(dim,1); dely0(2) = 0.062;
                 delh0 = zeros(dim,1); delh0(3) = deg2rad(1.93);
             end
-            delu0 = zeros(dim,1); delu0(4) = u0_gen; delu0(7) = u0_gen; 
-            delAu = zeros(dim,1); delAu(11) = u0_gen;
-            delv0 = zeros(dim,1); delv0(5) = v0_limit_gen(t0_idx,del_y_idx,u0_idx); delv0(8) = v0_limit_gen(t0_idx,del_y_idx,u0_idx);
-            delr0 = zeros(dim,1); delr0(6) = r0_limit_gen(t0_idx,del_y_idx,u0_idx); delr0(9) = r0_limit_gen(t0_idx,del_y_idx,u0_idx);
+            delvx0 = zeros(dim,1); delvx0(4) = vx0_gen; delvx0(7) = vx0_gen; 
+            delAu = zeros(dim,1); delAu(11) = vx0_gen;
+            delvy0 = zeros(dim,1); delvy0(5) = vy0_limit_gen(t0_idx,del_y_idx,vx0_idx); delvy0(8) = vy0_limit_gen(t0_idx,del_y_idx,vx0_idx);
+            delr0 = zeros(dim,1); delr0(6) = r0_limit_gen(t0_idx,del_y_idx,vx0_idx); delr0(9) = r0_limit_gen(t0_idx,del_y_idx,vx0_idx);
             delFy = zeros(dim,1); delFy(14) = max_Fy_uncertainty_spd;
             delFx =  zeros(dim,1);  delFx(15) = max_Fx_uncertainty;
-            options.R0 = zonotope( [options.x0, delx0,dely0,delh0,delu0, delAu,delv0,delr0,delFy,delFx]);
+            options.R0 = zonotope( [options.x0, delx0,dely0,delh0,delvx0, delAu,delvy0,delr0,delFy,delFx]);
             
             sys = nonlinearSys(dim, 1, @dyn_u_change, options);
             
             [vehRS,Rt] = reach(sys, options);
             fprintf('driving maneuver finished\n')
 
-            %% phase 2: contigency braking when u>u_really_slow = u_cri. Note: dhd = rd = 0
+            %% phase 2: contigency braking when vx>vx_really_slow = u_cri. Note: dhd = rd = 0
 
             temp = interval(Rt{end}{1}.set);
-            u_scale = [infimum(temp(4)),supremum(temp(4))];
-            brake_time = (p_u - u_really_slow )/amax;
+            vx_scale = [infimum(temp(4)),supremum(temp(4))];
+            brake_time = (p_vx - vx_really_slow )/amax;
             t_prev = zeros(dim,1); t_prev(end)=tm-t0;
             options.R0 = deleteZeros(Rt{end}{1}.set)- t_prev;
             Z = options.R0.Z;
@@ -117,7 +117,7 @@ for t0_idx = 1:length(t0_arr)
             options.R0 = zonotope([options.x0, GR0]);
             
             
-            options.tFinal = (u_scale(2) - u_really_slow )/amax+0.01; % make sure to trigger and pass the guard
+            options.tFinal = (vx_scale(2) - vx_really_slow )/amax+0.01; % make sure to trigger and pass the guard
             sys = nonlinearSys(dim, 1, @dyn_u_brake, options);
             [vehBrk,Rt_brk] = reach(sys, options);
             fprintf('hi-speed contingency braking finished\n')
@@ -132,10 +132,10 @@ for t0_idx = 1:length(t0_arr)
                 Rt_brk{i}{1}.set = Rt_brk{i}{1}.set + t_prev;
                 
                 temp = interval(vehBrk{i}{1});
-                if ~(idx_justpass<inf) && infimum(temp(4))<u_really_slow
+                if ~(idx_justpass<inf) && infimum(temp(4))<vx_really_slow
                     idx_justpass = i;
                 end
-                if ~(idx_allpass<inf) && supremum(temp(4))<u_really_slow
+                if ~(idx_allpass<inf) && supremum(temp(4))<vx_really_slow
                     idx_allpass = i;
                     break
                 end
@@ -267,7 +267,7 @@ for t0_idx = 1:length(t0_arr)
                 end
             end
             
-            save("./FRSdata/spd_change_t0="+num2str(t0)+"_u0="+num2str(u0)+"_p_u="+num2str(Au_idx)+","+num2str(p_u)+".mat",'vehRS_save','brake_idx1','brake_idx2');
+            save("./FRSdata/spd_change_t0="+num2str(t0)+"_vx0="+num2str(vx0)+"_p_vx="+num2str(Au_idx)+","+num2str(p_vx)+".mat",'vehRS_save','brake_idx1','brake_idx2');
         end
     end
 end

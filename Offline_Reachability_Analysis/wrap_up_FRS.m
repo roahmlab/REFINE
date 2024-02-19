@@ -11,43 +11,43 @@ dir_info = load('dir_change_Ay_info.mat');
 load my_const.mat
 dt = dir_info.t0_dt;
 t0_vec = 0:dt:tpk-dt;
-u0_vec = dir_info.u0_vec;
+vx0_vec = dir_info.vx0_vec;
 lane_time_bin_num = tpk/dt;
 dir_time_bin_num = tpk_dir/dt;
 dir_num = dir_info.num_Ay;
 lan_num = lane_info.num_Ay;
 M_mega = cell(0);
-%dim 1 is p_u or p_y , dX, dY, dtheta, v0_lower, v0_upper, r0_lower, r0_upper
-%dim 2 is for different values of p_u or p_y
+%dim 1 is p_vx or p_y , dX, dY, dtheta, v0_lower, v0_upper, r0_lower, r0_upper
+%dim 2 is for different values of p_vx or p_y
 %dim 3 is for different values of t0_idx (in our computation t0_idx = 0 always)
 
-for u0 = u0_vec
+for vx0 = vx0_vec
     M = containers.Map;
     M(char("Autb"))= [];  %keep this size loose since the number of actions may be different for each spd
     M(char("Au"))= cell(0);
     
     tb = nan*ones(8+6,dir_num,dir_time_bin_num); 
-    u0_idx = find(dir_info.u0_vec == u0);
+    vx0_idx = find(dir_info.vx0_vec == vx0);
     for t0_idx = 1:dir_time_bin_num
         for Ay_idx = 1:dir_num
-            tb(5,Ay_idx,t0_idx) = dir_info.v0_limit_c(t0_idx,Ay_idx,u0_idx)-dir_info.v0_limit_gen(t0_idx,Ay_idx,u0_idx);
-            tb(6,Ay_idx,t0_idx) = dir_info.v0_limit_c(t0_idx,Ay_idx,u0_idx)+dir_info.v0_limit_gen(t0_idx,Ay_idx,u0_idx);
-            tb(7,Ay_idx,t0_idx) = dir_info.r0_limit_c(t0_idx,Ay_idx,u0_idx)-dir_info.r0_limit_gen(t0_idx,Ay_idx,u0_idx);
-            tb(8,Ay_idx,t0_idx) = dir_info.r0_limit_c(t0_idx,Ay_idx,u0_idx)+dir_info.r0_limit_gen(t0_idx,Ay_idx,u0_idx);
+            tb(5,Ay_idx,t0_idx) = dir_info.vy0_limit_c(t0_idx,Ay_idx,vx0_idx)-dir_info.vy0_limit_gen(t0_idx,Ay_idx,vx0_idx);
+            tb(6,Ay_idx,t0_idx) = dir_info.vy0_limit_c(t0_idx,Ay_idx,vx0_idx)+dir_info.vy0_limit_gen(t0_idx,Ay_idx,vx0_idx);
+            tb(7,Ay_idx,t0_idx) = dir_info.r0_limit_c(t0_idx,Ay_idx,vx0_idx)-dir_info.r0_limit_gen(t0_idx,Ay_idx,vx0_idx);
+            tb(8,Ay_idx,t0_idx) = dir_info.r0_limit_c(t0_idx,Ay_idx,vx0_idx)+dir_info.r0_limit_gen(t0_idx,Ay_idx,vx0_idx);
         end
     end
     M(char("dirtb"))= tb;
     M(char("dir"))= cell(dir_num,dir_time_bin_num);
 
     tb =nan*ones(8+6,lan_num,lane_time_bin_num);
-    u0_idx = find(lane_info.u0_vec == u0);
-    if ~isempty(u0_idx) 
+    vx0_idx = find(lane_info.vx0_vec == vx0);
+    if ~isempty(vx0_idx) 
         for t0_idx = 1:lane_time_bin_num
             for Ay_idx = 1:lan_num
-                tb(5,Ay_idx,t0_idx) = lane_info.v0_limit_c(t0_idx,Ay_idx,u0_idx)-lane_info.v0_limit_gen(t0_idx,Ay_idx,u0_idx);
-                tb(6,Ay_idx,t0_idx) = lane_info.v0_limit_c(t0_idx,Ay_idx,u0_idx)+lane_info.v0_limit_gen(t0_idx,Ay_idx,u0_idx);
-                tb(7,Ay_idx,t0_idx) = lane_info.r0_limit_c(t0_idx,Ay_idx,u0_idx)-lane_info.r0_limit_gen(t0_idx,Ay_idx,u0_idx);
-                tb(8,Ay_idx,t0_idx) = lane_info.r0_limit_c(t0_idx,Ay_idx,u0_idx)+lane_info.r0_limit_gen(t0_idx,Ay_idx,u0_idx);
+                tb(5,Ay_idx,t0_idx) = lane_info.vy0_limit_c(t0_idx,Ay_idx,vx0_idx)-lane_info.vy0_limit_gen(t0_idx,Ay_idx,vx0_idx);
+                tb(6,Ay_idx,t0_idx) = lane_info.vy0_limit_c(t0_idx,Ay_idx,vx0_idx)+lane_info.vy0_limit_gen(t0_idx,Ay_idx,vx0_idx);
+                tb(7,Ay_idx,t0_idx) = lane_info.r0_limit_c(t0_idx,Ay_idx,vx0_idx)-lane_info.r0_limit_gen(t0_idx,Ay_idx,vx0_idx);
+                tb(8,Ay_idx,t0_idx) = lane_info.r0_limit_c(t0_idx,Ay_idx,vx0_idx)+lane_info.r0_limit_gen(t0_idx,Ay_idx,vx0_idx);
             end
         end 
     end
@@ -75,11 +75,11 @@ for i=1:length(files)
     dy2 = c2(2);
     dh2 = c2(3);
     
-    idx1 = strfind(files(i).name,'_u0=');
+    idx1 = strfind(files(i).name,'_vx0=');
     idx2 = strfind(files(i).name,'_p');
-    u0 = str2double(files(i).name(idx1+4:idx2-1));
+    vx0 = str2double(files(i).name(idx1+4:idx2-1));
     
-    mega_idx = find(abs(u0_vec - u0)<0.01);
+    mega_idx = find(abs(vx0_vec - vx0)<0.01);
     M = M_mega{mega_idx};
     
     dist_arr = [];
@@ -101,7 +101,7 @@ for i=1:length(files)
         Ay_idx = str2double(files(i).name(idx1+5:idx2-1));
         Ay     = str2double(files(i).name(idx2+1:idx3-1));
         idxt1 = strfind(files(i).name,'t0=');
-        idxt2 = strfind(files(i).name,'_u0=');
+        idxt2 = strfind(files(i).name,'_vx0=');
         t0 = str2double(files(i).name(idxt1+3:idxt2-1));
         t0_idx = t0/dt+1;
         
@@ -127,11 +127,11 @@ for i=1:length(files)
             M("dir") = MAy;
         end
     elseif contains(files(i).name,'spd_change')
-        idx1 = strfind(files(i).name,'_p_u=');
+        idx1 = strfind(files(i).name,'_p_vx=');
         idx2 = strfind(files(i).name,',');
         Au = str2double(files(i).name(idx1+5:idx2-1));
-        r0v0_spd_limits = [dir_info.v0_limit_c(1,1,mega_idx)-dir_info.v0_limit_gen(1,1,mega_idx);
-                           dir_info.v0_limit_c(1,1,mega_idx)+dir_info.v0_limit_gen(1,1,mega_idx);
+        r0v0_spd_limits = [dir_info.vy0_limit_c(1,1,mega_idx)-dir_info.vy0_limit_gen(1,1,mega_idx);
+                           dir_info.vy0_limit_c(1,1,mega_idx)+dir_info.vy0_limit_gen(1,1,mega_idx);
                            dir_info.r0_limit_c(1,1,mega_idx)-dir_info.r0_limit_gen(1,1,mega_idx);
                            dir_info.r0_limit_c(1,1,mega_idx)+dir_info.r0_limit_gen(1,1,mega_idx);];
         M(char("Autb")) =  [M(char("Autb")) [Au;dx;dy;dh;r0v0_spd_limits;dx1;dy1;dh1;dx2;dy2;dh2]];

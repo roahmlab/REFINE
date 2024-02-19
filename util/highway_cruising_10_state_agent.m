@@ -33,10 +33,10 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
         Ku
         Kh
         Kr
-        kappaPU 
-        kappaIU
-        phiPU
-        phiIU
+        kappaP_vx 
+        kappaI_vx
+        phiP_vx
+        phiI_vx
         kappaP 
         kappaI
         phiP
@@ -94,10 +94,10 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
             A.Ku = Ku;
             A.Kh = Kh;
             A.Kr = Kr;
-            A.kappaPU = kappaPU; % kappa_1,u 
-            A.kappaIU = kappaIU; % kappa_2,u
-            A.phiPU = phiPU;   % phi_1,u
-            A.phiIU = phiIU;   % phi_2,u
+            A.kappaP_vx = kappaP_vx; % kappa_1,vx
+            A.kappaI_vx = kappaI_vx; % kappa_2,vx
+            A.phiP_vx = phiP_vx;   % phi_1,vx
+            A.phiI_vx = phiI_vx;   % phi_2,vx
             A.kappaP = kappaP;  % kappa_1,r 
             A.kappaI = kappaI;    % kappa_2,r
             A.phiP = phiP;      % phi_1,r
@@ -107,7 +107,7 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
             A.max_Fx_uncertainty = max_Fx_uncertainty;
             A.max_Fx_uncertainty_braking = max_Fx_uncertainty_braking;
             A.Cus = m * grav_const * (lr / (A.l * Caf1) - lf / (A.l * Car1));
-            A.u_cri = u_really_slow;
+            A.u_cri = vx_really_slow;
             
             
         end
@@ -194,25 +194,25 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
                 reset@RTD_agent_2D(A,state) ;
             end
         end
-        function [delta, w_cmd, r_err, h_err, u_err, desired_front_lat_force, desired_lon_force] = FL_LLC(A,t,z,T,U,Z)
+        function [delta, w_cmd, r_err, h_err, vx_err, desired_front_lat_force, desired_lon_force] = FL_LLC(A,t,z,T,U,Z)
             h = z(3);
-            u = z(4);
-            v = z(5);
+            vx = z(4);
+            vy = z(5);
             r = z(6);
 %             w = z(7); % tire speed is no longer used
             r_err_sum = z(8);
             h_err_sum = z(9);
-            u_err_sum = z(10);
+            vx_err_sum = z(10);
             
             
             % desired trajectory
-            ud =interp1(T,U(1,:),t,'linear'); 
-            uddot =interp1(T,U(4,:),t,'linear');
+            vxd =interp1(T,U(1,:),t,'linear'); 
+            vxddot =interp1(T,U(4,:),t,'linear');
             rd = interp1(T,U(3,:),t,'linear');
             rddot =interp1(T,U(6,:),t,'linear');
             hd = interp1(T,Z(3,:),t,'linear');
             r_dot_des = A.Kr*(rd -r) + rddot + A.Kh*(hd -h);
-            u_dot_des = A.Ku*(ud -u) + uddot;
+            vx_dot_des = A.Ku*(vxd -vx) + vxddot;
             
             % lateral force computation for steering angle delta
             r_err = r - rd;
@@ -221,120 +221,120 @@ classdef highway_cruising_10_state_agent < RTD_agent_2D
             kappa = A.kappaP + A.kappaI* (r_err_sum + h_err_sum);
             phi = A.phiP + A.phiI*(r_err_sum + h_err_sum);
             tau_r = -(kappa*A.Mr + phi) *err_term;
-            vf = v + A.lf*r;
-            vr = v - A.lr*r;
-            alphar = - vr / max(u, A.u_cri*1.1); % modify denominator for numerical stability
+            vf = vy + A.lf*r;
+            vr = vy - A.lr*r;
+            alphar = - vr / max(vx, A.u_cri*1.1); % modify denominator for numerical stability
             Fywr = A.Car1*alphar;
             desired_front_lat_force = (A.Izz*(r_dot_des + tau_r) + A.lr*Fywr)/A.lf;
-            delta = desired_front_lat_force/A.Caf1 + vf/u;
+            delta = desired_front_lat_force/A.Caf1 + vf/vx;
 
             
 
             % longitudina force computation for wheel speed w_cmd      
-            kappaU = A.kappaPU + A.kappaIU*(u_err_sum);
-            phiU = A.phiPU + A.phiIU*(u_err_sum);
-            u_err = u - ud;
-            err_term = A.Ku*u_err;
-            tau_u = -(kappaU*A.Mu + phiU) * err_term;
-            desired_lon_force = (u_dot_des + tau_u - v*r)*A.m;
+            kappa_vx = A.kappaP_vx + A.kappaI_vx*(vx_err_sum);
+            phi_vx = A.phiP_vx + A.phiI_vx*(vx_err_sum);
+            vx_err = vx - vxd;
+            err_term = A.Ku*vx_err;
+            tau_vx = -(kappa_vx*A.Mu + phi_vx) * err_term;
+            desired_lon_force = (vx_dot_des + tau_vx - vy*r)*A.m;
             Cbf = A.m * A.grav_const * A.lr / A.l * A.mu_bar;
-            if uddot <= 0 
-                w_cmd = (desired_lon_force/Cbf * u + u) / A.rw;
+            if vxddot <= 0 
+                w_cmd = (desired_lon_force/Cbf * vx + vx) / A.rw;
             else
-                w_cmd = u/A.rw/(1-desired_lon_force/Cbf);
+                w_cmd = vx/A.rw/(1-desired_lon_force/Cbf);
             end
         end
-        function [delta, w_cmd, vlo, rlo, u_err] = Low_Spd_LLC(A,t,z,T,U,Z)
-            u = z(4);
-            u_err_sum = z(10);
+        function [delta, w_cmd, vylo, rlo, vx_err] = Low_Spd_LLC(A,t,z,T,U,Z)
+            vx = z(4);
+            vx_err_sum = z(10);
             mr = A.lf/A.l *A.m;
             
 
-            ud =interp1(T,U(1,:),t,'linear'); 
-            uddot =interp1(T,U(4,:),t,'linear');
+            vxd =interp1(T,U(1,:),t,'linear'); 
+            vxddot =interp1(T,U(4,:),t,'linear');
             rd = interp1(T,U(3,:),t,'linear');
-            delta = rd *(A.l+A.Cus*u^2/A.grav_const) / max(u,0.01); % modify denominator for numerical stability
-            rlo = delta*u/(A.l+A.Cus*u^2/A.grav_const);
-            vlo = rlo*(A.lr - u^2*mr/A.Car1);
+            delta = rd *(A.l+A.Cus*vx^2/A.grav_const) / max(vx,0.01); % modify denominator for numerical stability
+            rlo = delta*vx/(A.l+A.Cus*vx^2/A.grav_const);
+            vylo = rlo*(A.lr - vx^2*mr/A.Car1);
             
-            u_dot_des = A.Ku*(ud -u) + uddot;   
-            kappaU = A.kappaPU + A.kappaIU*(u_err_sum);
-            phiU = A.phiPU + A.phiIU*(u_err_sum);
-            u_err = u - ud;
-            err_term = A.Ku*u_err;
+            u_dot_des = A.Ku*(vxd -vx) + vxddot;   
+            kappa_vx = A.kappaP_vx + A.kappaI_vx*(vx_err_sum);
+            phi_vx = A.phiP_vx + A.phiI_vx*(vx_err_sum);
+            vx_err = vx - vxd;
+            err_term = A.Ku*vx_err;
             Mu_lo = A.max_Fx_uncertainty_braking / A.m;
-            tau_u = -(kappaU*Mu_lo + phiU) * err_term;
-            desired_lon_force = (u_dot_des + tau_u - vlo*rlo)*A.m;
+            tau_vx = -(kappa_vx*Mu_lo + phi_vx) * err_term;
+            desired_lon_force = (u_dot_des + tau_vx - vylo*rlo)*A.m;
             Cbf = A.m * A.grav_const * A.lr / A.l * A.mu_bar;
-            if uddot <= 0 
-                w_cmd = (desired_lon_force/Cbf *  u+ u) / A.rw;
+            if vxddot <= 0 
+                w_cmd = (desired_lon_force/Cbf *  vx+ vx) / A.rw;
             else
-                w_cmd = u/A.rw/(1-desired_lon_force/Cbf);
+                w_cmd = vx/A.rw/(1-desired_lon_force/Cbf);
             end
             
         end
         %% dynamics
-        function [dzdt, Fxwf, Fywf, Fywr ,delta ,w_cmd, v, r, Fxwr]= dynamics(A,t,z,T,U,Z) % extra output used
+        function [dzdt, Fxwf, Fywf, Fywr ,delta ,w_cmd, vy, r, Fxwr]= dynamics(A,t,z,T,U,Z) % extra output used
             
             h = z(3);
-            u = z(4);
-            v = z(5);
+            vx = z(4);
+            vy = z(5);
             r = z(6);
 
-            if  u > A.u_cri
-                    [delta, w_cmd, cur_r_err, cur_h_err, cur_u_err] = A.FL_LLC(t,z,T,U,Z);
+            if  vx > A.u_cri
+                    [delta, w_cmd, cur_r_err, cur_h_err, cur_vx_err] = A.FL_LLC(t,z,T,U,Z);
             else 
-                    [delta, w_cmd, v, r, cur_u_err] = A.Low_Spd_LLC(t,z,T,U,Z);
+                    [delta, w_cmd, vy, r, cur_vx_err] = A.Low_Spd_LLC(t,z,T,U,Z);
                      cur_r_err= 0;
                      cur_h_err = 0;
             end
 
             uddot = interp1(T,U(4,:),t,'linear');
-            vf = v + A.lf*r;
-            vr = v - A.lr*r;
-            uv_wf = rotmat(-delta)*[u;vf];
-            uv_wr = [u; vr];
-            alphar = atan( uv_wr(2) ./ max(u, A.u_cri*1.1)); % modify denominator for numerical stability
+            vf = vy + A.lf*r;
+            vr = vy - A.lr*r;
+            v_wf = rotmat(-delta)*[vx;vf];
+            v_wr = [vx; vr];
+            alphar = atan( v_wr(2) ./ max(vx, A.u_cri*1.1)); % modify denominator for numerical stability
             Fywr = -A.Car1*tanh(A.Car2*alphar);
             if uddot <= 0
-                lambda_f = (A.rw * w_cmd - uv_wf(1)) / max(uv_wf(1), 0.01);
+                lambda_f = (A.rw * w_cmd - v_wf(1)) / max(v_wf(1), 0.01);
             else
-                lambda_f = (A.rw * w_cmd - uv_wf(1)) / max(A.rw * w_cmd, 0.01);
+                lambda_f = (A.rw * w_cmd - v_wf(1)) / max(A.rw * w_cmd, 0.01);
             end
-            alphaf = atan( uv_wf(2) ./ (uv_wf(1) + sign(uv_wf(1)+0.001)*0.01));
+            alphaf = atan( v_wf(2) ./ (v_wf(1) + sign(v_wf(1)+0.001)*0.01));
             Cbf = A.m * A.grav_const * A.lr / A.l * A.mu_bar;
             Fxwf = Cbf*lambda_f;
             Fxwr = 0;
             Fywf = -A.Caf1*tanh(A.Caf2*alphaf);
             
-            du =  v*r + (cos(delta)*Fxwf-sin(delta)*Fywf + Fxwr)/A.m;
-            dv = - u*r + (sin(delta)*Fxwf+cos(delta)*Fywf + Fywr)/A.m ;
+            dvx =  vy*r + (cos(delta)*Fxwf-sin(delta)*Fywf + Fxwr)/A.m;
+            dvy = - vx*r + (sin(delta)*Fxwf+cos(delta)*Fywf + Fywr)/A.m ;
             torque =  A.lf*(sin(delta)*Fxwf+cos(delta)*Fywf) - A.lr * Fywr;
             dr = torque/A.Izz;
             
             
-             if u > A.u_cri
-                dzdt = [u*cos(h)-v*sin(h);
-                u*sin(h)+v*cos(h);
+             if vx > A.u_cri
+                dzdt = [vx*cos(h)-vy*sin(h);
+                vx*sin(h)+vy*cos(h);
                 r;
-                du;
-                dv;
+                dvx;
+                dvy;
                 dr;
                 0;
                 cur_r_err^2;
                 cur_h_err^2;
-                cur_u_err^2];
+                cur_vx_err^2];
              else 
-                dzdt = [u*cos(h)-v*sin(h);
-                u*sin(h)+v*cos(h);
+                dzdt = [vx*cos(h)-vy*sin(h);
+                vx*sin(h)+vy*cos(h);
                 r;
-                du;
+                dvx;
                 0;
                 0;
                 0;
                 0;
                 0;
-                cur_u_err^2];
+                cur_vx_err^2];
              end
         
         

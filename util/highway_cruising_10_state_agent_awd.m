@@ -111,7 +111,7 @@ classdef highway_cruising_10_state_agent_awd < RTD_agent_2D
             A.max_Fx_uncertainty = max_Fx_uncertainty;
             A.max_Fx_uncertainty_braking = max_Fx_uncertainty_braking;
             A.Cus = m * grav_const * (lr / (A.l * Caf1) - lf / (A.l * Car1));
-            A.u_cri = u_really_slow;
+            A.u_cri = vx_really_slow;
             
             
         end

@@ -15,39 +15,39 @@ function [FRS, isgood] = linear_regime_verification(FRS, manu_type, isSim)
     FRS_itv = interval(FRS);
     h = FRS_itv(3);
     u = FRS_itv(4);
-    v = FRS_itv(5);
+    vy = FRS_itv(5);
     r = FRS_itv(6);
     t0 = Z(10,1);
     tbrk1 = Z(13,1);
     t = FRS_itv(20);
-    u0 = FRS_itv(7);
+    vx0 = FRS_itv(7);
     h0 = Z(end-1);
-    p_u = FRS_itv(11);
+    p_vx = FRS_itv(11);
     p_y = FRS_itv(12);
     err_r_sum = FRS_itv(16);
-    err_u_sum = FRS_itv(18);
+    err_vx_sum = FRS_itv(18);
 
-    [hd, ud, dud, rd, drd] = get_ref(t0,tbrk1,t,u0,h0,p_u,p_y,manu_type,isSim);
+    [hd, vxd, dvxd, rd, drd] = get_ref(t0,tbrk1,t,vx0,h0,p_vx,p_y,manu_type,isSim);
 
     % trim u for stabalization when u appears in denomenator as suggested
     % by Tae-Yun Kim et al, Advanced slip ratio for ensuring numerical
     % stability of low-speed driving simulation
     uub = supremum(u);
     ulb = infimum(u);
-    uden = interval(max(max(u_really_slow,1)*1.1,ulb), max(max(u_really_slow,1)*1.1,uub));
+    uden = interval(max(max(vx_really_slow,1)*1.1,ulb), max(max(vx_really_slow,1)*1.1,uub));
 
-    if uub <= u_really_slow
+    if uub <= vx_really_slow
         r = rd; % recall delta = rd * (lr+lf+Cus*u^2) / u and Cus = m/(lr+lf)*(lr/Caf1 - lf/Car1);
-        v = lr*r - m*lf/Car1/(lf+lr)*u^2*r;
-        alpha_r = -(v - lr*r) / uden;
+        vy = lr*r - m*lf/Car1/(lf+lr)*u^2*r;
+        alpha_r = -(vy - lr*r) / uden;
     else
-        vlb = infimum(v);
-        vub = supremum(v);
+        vlb = infimum(vy);
+        vub = supremum(vy);
         rlb = infimum(r);
         rub = supremum(r);
 
         if (vlb >=0 || vub <=0) && (rlb >=0 || rub <=0)
-            alpha_r = -(v - lr*r) / uden;
+            alpha_r = -(vy - lr*r) / uden;
         elseif vlb*vub < 0 && (rlb >=0 || rub <=0)
             if rlb >= 0
                 alpha_r = -(interval(0,vub) - lr*r) / uden;
@@ -56,9 +56,9 @@ function [FRS, isgood] = linear_regime_verification(FRS, manu_type, isSim)
             end
         elseif (vlb >=0 || vub <=0) && rlb*rub<0
             if vlb >= 0
-                alpha_r = -(v - lr*interval(0,rub)) / uden;
+                alpha_r = -(vy - lr*interval(0,rub)) / uden;
             else
-                alpha_r = -(v - lr*interval(rlb,0)) / uden;
+                alpha_r = -(vy - lr*interval(rlb,0)) / uden;
             end
         else
             alpha_r1 = -(interval(vlb,0) - lr*interval(rlb,0)) / uden;
@@ -90,11 +90,11 @@ function [FRS, isgood] = linear_regime_verification(FRS, manu_type, isSim)
     end
 
     % test slip ratio 
-    tau_u = ((kappaPU+kappaIU*err_u_sum)*Mu + (phiPU+phiIU*err_u_sum)) * (u-ud);
+    tau_vx = ((kappaP_vx+kappaI_vx*err_vx_sum)*Mu + (phiP_vx+phiI_vx*err_vx_sum)) * (u-vxd);
     if isSim
-        lambda_f = (lf+lr)/grav_const/lr/mu_bar*(-Ku*(u-ud) + dud -v*r + tau_u);
+        lambda_f = (lf+lr)/grav_const/lr/mu_bar*(-Ku*(u-vxd) + dvxd -vy*r + tau_vx);
     else
-        lambda_f = 1/grav_const/mu_bar*(-Ku*(u-ud) + dud -v*r + tau_u); % notice lambda_f = lambda_r in AWD
+        lambda_f = 1/grav_const/mu_bar*(-Ku*(u-vxd) + dvxd -vy*r + tau_vx); % notice lambda_f = lambda_r in AWD
     end
     if supremum(abs(lambda_f)) > lambda_cri
         FRS = zonotope([FRS.Z, [1000; 1000; zeros(dim-2,1)]]);
@@ -106,11 +106,11 @@ function [FRS, isgood] = linear_regime_verification(FRS, manu_type, isSim)
 end
 
 %% help function 
-function [hd, ud, dud, rd, drd] = get_ref(t0,tbrk1,t,u0,h0,p_u,p_y,manu_type,isSim)
+function [hd, vxd, dvxd, rd, drd] = get_ref(t0,tbrk1,t,vx0,h0,p_vx,p_y,manu_type,isSim)
     load('my_const.mat');
     hd = h0;
-    ud = p_u;
-    dud = 0;
+    vxd = p_vx;
+    dvxd = 0;
     rd = 0;
     drd = 0;
     t = t + t0;
@@ -128,14 +128,14 @@ function [hd, ud, dud, rd, drd] = get_ref(t0,tbrk1,t,u0,h0,p_u,p_y,manu_type,isS
             t1 = tpk_dir; % non-braking maneuver
             t2 = t1 + tbrk1; % first phase of braking maneuver (const deaccelerate)
             if tub <= t1 + 1e-5 % non-braking (add 1e-5 due to numerical issue)
-                ud = (p_u - u0) / t1 * t + u0;
-                dud = (p_u - u0) / t1;                
+                vxd = (p_vx - vx0) / t1 * t + vx0;
+                dvxd = (p_vx - vx0) / t1;                
             elseif tlb >= t2 - 1e-5 % braking2 (minus 1e-5 due to numerical issue)
-                ud = 0;
-                dud = 0;
+                vxd = 0;
+                dvxd = 0;
             else % braking `
-                ud = p_u - (p_u-u_really_slow)*(t-t1)/tbrk1;
-                dud = - (p_u-u_really_slow)/tbrk1;
+                vxd = p_vx - (p_vx-vx_really_slow)*(t-t1)/tbrk1;
+                dvxd = - (p_vx-vx_really_slow)/tbrk1;
             end
         case 'dir' % dirction change
             t1 = tpk_dir;
@@ -145,11 +145,11 @@ function [hd, ud, dud, rd, drd] = get_ref(t0,tbrk1,t,u0,h0,p_u,p_y,manu_type,isS
                 drd = (p_y*sin(2*pi*t/t1))* pi/t1;
                 hd = h0 + p_y/2 - p_y*t1/4/pi*sin(2*pi*t/t1);
             elseif tlb >= t2 -1e-5
-                ud = 0;
+                vxd = 0;
                 hd = h0 + p_y/2*t1;
             else
-                ud = p_u - (p_u-u_really_slow)*(t-t1)/tbrk1;
-                dud = - (p_u-u_really_slow)/tbrk1;
+                vxd = p_vx - (p_vx-vx_really_slow)*(t-t1)/tbrk1;
+                dvxd = - (p_vx-vx_really_slow)/tbrk1;
                 hd = h0 + p_y/2*t1;
             end
         case 'lan' % lane change
@@ -168,10 +168,10 @@ function [hd, ud, dud, rd, drd] = get_ref(t0,tbrk1,t,u0,h0,p_u,p_y,manu_type,isS
                 drd = h1des * p_y * (-2*h2des) * (exp(-h2des * (t-0.5*t1)^2) * (-2*h2des) *(t-0.5*t1)^2 ...
                       + exp(-h2des * (t-0.5*t1)^2));
             elseif tlb >= t2 - 1e-5
-                ud = 0;
+                vxd = 0;
             else
-                ud = p_u - (p_u-u_really_slow)*(t-t1)/tbrk1;
-                dud = - (p_u-u_really_slow)/tbrk1;
+                vxd = p_vx - (p_vx-vx_really_slow)*(t-t1)/tbrk1;
+                dvxd = - (p_vx-vx_really_slow)/tbrk1;
             end
     end
 

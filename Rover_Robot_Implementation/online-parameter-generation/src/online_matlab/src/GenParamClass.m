@@ -328,14 +328,14 @@ function [A3, AH, bounds, obstacles] = build_helpers(frs, frs_low, frs_dir_info,
     %    'verbose',verbose_level,'goal_radius',goal_radius,'num_cars',12) ;%1 is ego , 2 means 1 obs
     HLP = highway_HLP('max_spd',15);%RRT_star_HLP('timeout',0.5,'bounds',bounds,'grow_tree_mode',RTD_HLP_grow_tree_mode,'verbose',verbose_level);
     AH_debug_flag = false;
-    u0_vec = frs_dir_info.u0_vec;
+    vx0_vec = frs_dir_info.vx0_vec;
     if exist('frs_low', 'var') && ~isempty(frs_low)
-        u0_vec = horzcat(0:0.1:0.5, u0_vec);
+        vx0_vec = horzcat(0:0.1:0.5, vx0_vec);
         frs.M_mega = horzcat(frs_low.M_mega, frs.M_mega);
     end
     AH = highwayAgentHelper(A3,frs,HLP,'t_plan',t_plan,'t_move',t_move,'t_failsafe_move',t_failsafe_move,...
         'eps',0.001,'verbose',verbose_level,'plot_flag',AH_debug_flag);
-    AH.v_array = u0_vec;
+    AH.v_array = vx0_vec;
     obstacles = [];
 end
 
