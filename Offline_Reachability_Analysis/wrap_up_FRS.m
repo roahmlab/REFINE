@@ -77,7 +77,7 @@ for i=1:length(files)
     
     idx1 = strfind(files(i).name,'_vx0=');
     idx2 = strfind(files(i).name,'_p');
-    vx0 = str2double(files(i).name(idx1+4:idx2-1));
+    vx0 = str2double(files(i).name(idx1+5:idx2-1));
     
     mega_idx = find(abs(vx0_vec - vx0)<0.01);
     M = M_mega{mega_idx};
